@@ -1,0 +1,36 @@
+# =============================================================================
+# Main environment (.venv, Python 3.14) -- graph construction, GNN, evaluation
+# =============================================================================
+#   python -m venv .venv
+#   .venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# Stage 1 (DICOM -> NIfTI -> PyRadiomics) runs in a SEPARATE Python 3.9
+# environment; see requirements-radiomics.txt. The two hand over one CSV.
+
+numpy>=2.0
+scipy>=1.13
+pandas>=2.2
+scikit-learn>=1.9,<1.10
+pyyaml>=6.0
+openpyxl>=3.1            # the TCIA clinical spreadsheets
+matplotlib>=3.7
+
+# Survival analysis ---------------------------------------------------------
+lifelines>=0.27
+# scikit-survival 0.28 ships a cp314 wheel but declares `ecos`, which does not.
+# ecos is only used by its SVM solvers, none of which this project touches:
+#   pip install joblib "narwhals>=2.0.1" numexpr "osqp>=1.0.2"
+#   pip install --no-deps scikit-survival
+scikit-survival>=0.28    # install as above
+
+# Deep learning -------------------------------------------------------------
+# GNN layers are plain PyTorch (index_add / scatter_reduce); no torch-geometric.
+# For the GPU build:
+#   pip install "torch==2.14.0+cu130" --index-url https://download.pytorch.org/whl/cu130
+torch>=2.9
+
+# Data access ---------------------------------------------------------------
+# Head-Neck-PET-CT is served by the NIH CRDC (Gen3) behind a login; the
+# downloader uses only urllib. idc-index is optional, for browsing other
+# collections that ARE on the Imaging Data Commons.
+# idc-index

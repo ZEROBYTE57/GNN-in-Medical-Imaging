@@ -1,0 +1,34 @@
+# **/venv/
+# **/.venv/
+# **/.py_venv/
+# **/py_venv/
+# **/__pycache__/
+# **/.pytest_cache/
+
+# .vscode/*
+# Back Up/*
+# MLFGNN/.gitignore_backup
+
+
+
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+venv*/
+env/
+py_venv/
+.py_venv/
+**/Lib/site-packages/
+pyvenv.cfg
+
+MLFGNN/.gitignore_backup
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
