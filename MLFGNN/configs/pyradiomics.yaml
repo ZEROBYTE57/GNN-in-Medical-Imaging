@@ -1,0 +1,78 @@
+# =============================================================================
+# Pinned PyRadiomics extraction configuration
+# =============================================================================
+# Reproduces the extraction settings reported in Peng et al., Biomed. Signal
+# Process. Control 92 (2024) 106137, Section 2.2 / 3.1:
+#
+#   - PET and CT resampled to isotropic 1 x 1 x 1 mm3 (B-spline interpolation)
+#   - fixed bin COUNT of 64 for discretisation
+#   - features extracted from the whole tumour VOI (primary + involved nodes)
+#   - LoG and wavelet filters applied in addition to the original image
+#
+# This file is the reproducibility contract: it is hashed into every feature
+# table written by `mlfgnn.features.extract` so a table can always be traced
+# back to the settings that produced it. Do not edit without bumping
+# `config_version`.
+# =============================================================================
+
+# PyRadiomics validates this file against its own schema and rejects unknown
+# keys, so the version lives in this comment:  config_version 1.0.0
+# The SHA-256 of the whole file is recorded in every feature table's provenance
+# sidecar, and the PyRadiomics package version (3.1.0, requirements-radiomics.txt)
+# alongside it.
+#
+# Feature count: this config yields 1316 features per modality (107 original
+# + 93 x 13 filtered images). Peng et al. report 1561, so their supplementary
+# filter list contains members not named in the main text (likely gradient /
+# square / square-root / logarithm / exponential). Add them under imageType
+# once confirmed from Supplementary "Radiomic feature extraction"; the
+# selection cascade reduces either set to 12 per modality.
+
+imageType:
+  Original: {}
+  LoG:
+    sigma: [1.0, 2.0, 3.0, 4.0, 5.0]
+  Wavelet:
+    start_level: 0
+    level: 1
+
+featureClass:
+  firstorder:
+  shape:
+  glcm:
+  glrlm:
+  glszm:
+  gldm:
+  ngtdm:
+
+setting:
+  # --- resampling ---------------------------------------------------------
+  # sitkBSpline == 3. Applied to the image; the mask is resampled nearest
+  # neighbour by PyRadiomics automatically.
+  interpolator: "sitkBSpline"
+  resampledPixelSpacing: [1.0, 1.0, 1.0]
+  padDistance: 10
+
+  # --- discretisation -----------------------------------------------------
+  # Fixed bin COUNT (not width). Peng et al. use 64 bins for both modalities;
+  # this is the IBSI-discouraged-but-reported choice, kept for comparability.
+  binCount: 64
+
+  # --- normalisation ------------------------------------------------------
+  # PET is already converted to SUV upstream (see mlfgnn.data.tcia), CT is in
+  # Hounsfield units. No further intensity normalisation is applied so that
+  # absolute SUV/HU values remain interpretable.
+  normalize: false
+  removeOutliers: null
+
+  # --- masking ------------------------------------------------------------
+  label: 1
+  minimumROIDimensions: 3
+  minimumROISize: 64          # voxels; VOIs smaller than this are dropped
+  geometryTolerance: 0.001
+  correctMask: true
+
+  # --- misc ---------------------------------------------------------------
+  force2D: false
+  preCrop: true
+  voxelArrayShift: 0          # PET SUV is non-negative already

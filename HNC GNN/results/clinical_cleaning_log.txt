@@ -1,0 +1,8 @@
+CHUS: 108 rows -> 101 patient rows (dropped footnote rows)
+HGJ: 97 rows -> 91 patient rows (dropped footnote rows)
+CHUM: 71 rows -> 65 patient rows (dropped footnote rows)
+HMR: 46 rows -> 41 patient rows (dropped footnote rows)
+Excluded-sheet patients ['HN-CHUS-079', 'HN-HGJ-068']: removed 0 rows
+HN-HGJ-021: DM=1 without date -> DM time set to 376 d (earliest known event/follow-up; upper bound)
+HN-HGJ-086: DM=1 without date -> DM time set to 815 d (earliest known event/follow-up; upper bound)
+20 patients have death date after last clinic follow-up; event dates are used as recorded

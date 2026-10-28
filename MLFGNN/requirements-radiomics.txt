@@ -1,0 +1,21 @@
+# =============================================================================
+# Radiomics environment (.venv-radiomics, Python 3.9) -- stage 1 only
+# =============================================================================
+# PyRadiomics 3.1.0 is the last release with a Windows wheel, and that wheel
+# stops at cp39. Building it for a newer interpreter needs MSVC Build Tools,
+# so stage 1 gets its own interpreter:
+#
+#   py install 3.9
+#   py -3.9 -m venv .venv-radiomics
+#   .venv-radiomics\Scripts\python.exe -m pip install -r requirements-radiomics.txt
+#
+# Everything downstream reads the CSV this stage writes and never imports these.
+
+numpy<2                  # PyRadiomics 3.1.0 is built against numpy 1.x
+pyradiomics==3.1.0       # pinned; the digest of configs/pyradiomics.yaml is recorded with every table
+SimpleITK>=2.3
+pydicom>=2.4,<3          # rt-utils 1.2 targets pydicom 2.x
+rt-utils>=1.2.7
+pandas>=1.5,<2.3
+openpyxl>=3.1
+pyyaml>=6.0

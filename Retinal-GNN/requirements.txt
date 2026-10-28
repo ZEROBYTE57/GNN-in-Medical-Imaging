@@ -1,0 +1,12 @@
+numpy
+scipy
+scikit-image
+scikit-learn
+opencv-python
+pillow
+matplotlib
+pandas
+tqdm
+pytest
+# torch / torchvision: install the CUDA build from https://pytorch.org/get-started/locally/
+# (RTX 4060 -> a recent CUDA 12.x wheel). Do not pip install plain `torch` on Windows: it may give a CPU-only build.

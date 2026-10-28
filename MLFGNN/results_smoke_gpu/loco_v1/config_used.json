@@ -1,0 +1,99 @@
+{
+  "hash": "282269294491",
+  "device": {
+    "device": "cuda",
+    "torch": "2.14.0+cu130",
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_memory_gb": 8.59,
+    "cuda_version": "13.0",
+    "cudnn": 92400
+  },
+  "config": {
+    "run_name": "loco_v1",
+    "data": {
+      "feature_table": "data/processed/features_synth.csv",
+      "id_col": "patient_id",
+      "centre_col": "centre",
+      "time_col": "PFS_time",
+      "event_col": "PFS_event",
+      "pet_prefix": "PET_",
+      "ct_prefix": "CT_",
+      "clinical_cols": [
+        "age",
+        "T_stage",
+        "N_stage",
+        "site"
+      ]
+    },
+    "selection": {
+      "variance_threshold": 0.005,
+      "univariate_repeats": 50,
+      "univariate_splits": 3,
+      "top_k_univariate": 50,
+      "spearman_threshold": 0.8,
+      "lasso_cv_folds": 5,
+      "max_features_per_modality": 12
+    },
+    "graphs": {
+      "modes": [
+        "snf_threshold",
+        "knn",
+        "centre_balanced_knn"
+      ],
+      "snf": {
+        "k_neighbors": 20,
+        "mu": 0.5,
+        "n_iters": 20,
+        "threshold": 0.2
+      },
+      "knn": {
+        "k_values": [
+          5
+        ]
+      },
+      "symmetrise": "union"
+    },
+    "model": {
+      "layer_types": [
+        "GAT"
+      ],
+      "fusion": "network",
+      "hidden_dim": 32,
+      "heads": 4,
+      "dropout": 0.5,
+      "use_clinical": true
+    },
+    "train": {
+      "epochs": 40,
+      "lr": 0.005,
+      "weight_decay": 0.005,
+      "optimizer": "adam",
+      "patience": 30,
+      "min_epochs": 20
+    },
+    "protocol": {
+      "scheme": "leave_one_centre_out",
+      "seeds": [
+        0
+      ],
+      "inner_val_fraction": 0.2,
+      "eval_times": [
+        12,
+        24,
+        60
+      ]
+    },
+    "baselines": [
+      "clinical_cox",
+      "radiomics_coxph",
+      "cox_nnet",
+      "rsf"
+    ],
+    "stats": {
+      "bootstrap_iters": 2000,
+      "alpha": 0.05
+    },
+    "output_dir": "results_smoke_gpu"
+  }
+}

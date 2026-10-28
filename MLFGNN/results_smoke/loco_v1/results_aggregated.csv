@@ -1,0 +1,17 @@
+model,graph_mode,k,split,harrell_c_mean,harrell_c_std,harrell_c_count,uno_c_mean,uno_c_std,uno_c_count,auc_12m_mean,auc_12m_std,auc_12m_count,auc_24m_mean,auc_24m_std,auc_24m_count,auc_60m_mean,auc_60m_std,auc_60m_count,ibs_mean,ibs_std,ibs_count
+MLF-GAT,centre_balanced_knn,3.0,held_out_centre,0.7598780234763661,0.04919301494379998,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,centre_balanced_knn,3.0,in_centre,0.7683222493934887,0.024146455491854523,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,centre_balanced_knn,5.0,held_out_centre,0.7605007367486621,0.04102583014198275,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,centre_balanced_knn,5.0,in_centre,0.7701424139493612,0.02445699852460714,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,knn,3.0,held_out_centre,0.7645750427497192,0.04411576293641635,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,knn,3.0,in_centre,0.767120723961455,0.025185305067859588,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,knn,5.0,held_out_centre,0.7619901633534617,0.04165598615111995,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,knn,5.0,in_centre,0.7626499593079132,0.027715738160482756,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,snf_threshold,,held_out_centre,0.7623932590849337,0.03337568729838172,8,,,0,,,0,,,0,,,0,,,0
+MLF-GAT,snf_threshold,,in_centre,0.7690470568531851,0.02178900486916485,8,,,0,,,0,,,0,,,0,,,0
+clinical_cox,none,,held_out_centre,0.7086496422875139,0.050490772649980496,8,,,0,,,0,,,0,,,0,,,0
+clinical_cox,none,,in_centre,0.7385203804852146,0.05275693113709912,8,,,0,,,0,,,0,,,0,,,0
+cox_nnet,none,,held_out_centre,0.7618387514197258,0.029840976972999096,8,,,0,,,0,,,0,,,0,,,0
+cox_nnet,none,,in_centre,0.7460805894826378,0.02487881184216702,8,,,0,,,0,,,0,,,0,,,0
+radiomics_coxph,none,,held_out_centre,0.7708163403941046,0.02116826819034114,8,,,0,,,0,,,0,,,0,,,0
+radiomics_coxph,none,,in_centre,0.7671823238152818,0.021609782944928883,8,,,0,,,0,,,0,,,0,,,0
