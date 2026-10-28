@@ -1,0 +1,22 @@
+# Week-1 data settings. Change a value here, not in the scripts.
+# Each choice below is a default pending confirmation (see docs/decisions.md).
+
+abide:
+  # ABIDE I Preprocessed Connectomes Project (PCP), public S3 bucket, no login.
+  base_url: https://s3.amazonaws.com/fcp-indi/data/Projects/ABIDE_Initiative
+  phenotype_file: Phenotypic_V1_0b_preprocessed1.csv
+  pipeline: cpac            # cpac | ccs | dparsf | niak
+  strategy: filt_noglobal   # band-pass filtered, NO global signal regression
+  atlases: [rois_aal, rois_cc200]
+  main_atlas: rois_aal      # AAL 116: CI-GNN and BrainIB defaults; CC200 = sensitivity
+  quality_checked: true     # drop subjects any PCP rater marked "fail" (as nilearn does)
+
+paths:
+  raw: data/raw/abide
+  processed: data/processed
+
+connectome:
+  method: pearson
+  fisher_z: true
+  clip_r: 0.999999          # keeps arctanh finite
+  min_timepoints: 100       # subjects with shorter scans are dropped and reported

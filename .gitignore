@@ -18,3 +18,14 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .ipynb_checkpoints/
+*.egg-info/
+
+# Literature: no papers in the repo.
+# Only the notes will be tracked.
+Literature/*
+!Literature/*.md
+
+# Data (large or licence-bound): never commit
+CXB/data/raw/
+CXB/data/processed/*.npz
+CXB/results/
