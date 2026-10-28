@@ -23,13 +23,13 @@ Implemented so far: environment, ABIDE download, and connectivity matrices for 8
 
 | Folder | Contents | State |
 |---|---|---|
-| [CXB/](CXB/) | CXB benchmark and the SiteSwap method | **Active** |
-| [Literature/](Literature/) | Reading notes and literature list (the papers themselves are not in the repo) | Active |
-| [MLFGNN/](MLFGNN/) | Centre-aware population graph for head-and-neck cancer survival (TCIA); synthetic data only | Archived: data access |
-| [HNC GNN/](HNC%20GNN/) | Earlier head-and-neck cancer pipeline | Archived |
-| [AD-PopGraph/](AD-PopGraph/) | Leakage-free population graph for Alzheimer's disease (ADNI); protocol only | Archived: data access |
-| [Retinal-GNN/](Retinal-GNN/) | Robustness benchmark for graph-based retinal vessel segmentation; metrics only | Archived |
-| [GNN/](GNN/) | Early topic-search reports | Archived |
+| [CXB/](CXB/) | CXB benchmark and the SiteSwap method 
+| [Literature/](Literature/) | Reading notes and literature list (the papers themselves are not in the repo) 
+| [MLFGNN/](MLFGNN/) | Centre-aware population graph for head-and-neck cancer survival (TCIA); synthetic data only 
+| [HNC GNN/](HNC%20GNN/) | Earlier head-and-neck cancer pipeline
+| [AD-PopGraph/](AD-PopGraph/) | Leakage-free population graph for Alzheimer's disease (ADNI); protocol only
+| [Retinal-GNN/](Retinal-GNN/) | Robustness benchmark for graph-based retinal vessel segmentation; metrics only
+| [GNN/](GNN/) | Early topic-search reports
 
 Inside the active project:
 
@@ -64,6 +64,5 @@ Settings: [configs/data.yaml](CXB/configs/data.yaml). Reasons for each choice: [
 
 ## Data
 
-- **ABIDE I**, via the Preprocessed Connectomes Project (CPAC pipeline, band-pass filtered, no global signal regression). Downloaded by the script; never committed.
+- **ABIDE I**, via the Preprocessed Connectomes Project (CPAC pipeline, band-pass filtered, no global signal regression).
 - ABIDE's terms require citing Di Martino et al., *Molecular Psychiatry* 19 (2014), and Craddock et al., *Frontiers in Neuroinformatics* (2013).
-- Data and results folders are excluded by [.gitignore](.gitignore).
