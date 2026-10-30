@@ -29,3 +29,18 @@ Literature/*
 CXB/data/raw/
 CXB/data/processed/*.npz
 CXB/results/
+
+# Third-party baseline repositories (cloned, not ours)
+CXB/external/
+
+# Third-party data files (e.g. BrainIB's md_AAL_0.4.mat): no stated redistribution terms
+*.mat
+
+# Held back until resolved (see CXB/docs/decisions.md):
+# - brainib_v1.py copies BrainIB's training loop; the BrainIB repository has no licence,
+#   so it must not be published until the authors agree or the loop is rewritten.
+# - baseline-notes.md documents flaws in BrainIB's code; the authors are to be told first.
+CXB/scripts/baselines/brainib_v1.py
+CXB/docs/baseline-notes.md
+# Word documents for the guide (name the guide, contain unpublished findings)
+*.docx

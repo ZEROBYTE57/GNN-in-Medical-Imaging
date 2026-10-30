@@ -11,7 +11,7 @@ Settings: `configs/data.yaml`; reasons: `decisions.md`.
 | With preprocessed files and no QC fail | 873 (nilearn reports 871; small difference in the QC rule, to check) |
 | After dropping scans under 100 timepoints | **848** (393 ASD, 455 controls, 19 sites) |
 
-All 25 dropped subjects are the whole **OHSU** site (78 timepoints each). Open question: keep OHSU with a lower threshold?
+All 25 dropped subjects are the whole **OHSU** site (78 timepoints each). Decided 29 Oct 2026: OHSU stays dropped (see decisions.md).
 
 ## Per site (AAL; CC200 identical)
 
