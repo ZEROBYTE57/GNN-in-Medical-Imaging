@@ -6,18 +6,38 @@ Code and notes for an M.Tech dissertation on graph neural networks (GNNs) in med
 
 **Question:** when a brain GNN highlights connections, has it found the disease or the scanner?
 
-Brain-GNN papers usually validate their explanations by matching them to published findings, because real data has no known correct answer. This project creates one: it plants known connectivity effects and realistic scanner-site artefacts into real connectomes from the ABIDE dataset, then measures whether explainers and shortcut-robust brain GNNs recover the planted effect or the site artefact.
+Brain-GNN papers usually validate their explanations by matching them to published findings, because real data has no known correct answer. This project creates one. It plants a known connectivity effect into real healthy-control connectomes from ABIDE, adds a fake scanner shortcut, and measures whether explanations point at the planted effect or at the scanner. It also proposes **SiteSwap**, a simple training method that keeps explanations on the real signal.
 
-| Part | What it does |
+| Part | Choice |
 |---|---|
-| Benchmark | Known effects (strong, moderate, weak) planted into healthy-control connectomes; site decoys built from measured ComBat site effects |
-| Models tested | MLP, logistic regression, random forest; GCN, GAT, GIN, graph transformer; BrainGNN, BrainIB, CI-GNN, BrainOOD |
-| Explainers tested | Saliency, Integrated Gradients, GNNExplainer, PGExplainer, attention, built-in model explanations |
-| Proposed method | **SiteSwap**: a GNN trained so its explanation stays the same across site-swapped copies of each subject |
-| Main metric | How well each explanation recovers the planted connections (AUPRC) |
-| Evaluation | Subject-level, inductive splits; random 5-fold and leave-one-site-out; 5 seeds; shuffled-label control |
+| Data | ABIDE I (PCP, CPAC, no global signal regression), AAL-116 atlas, 848 subjects, 19 sites |
+| Planted effect | One shared signal added to the time series of 10 regions in fake "patients" (strengths x1, x2, x4); truth = connections inside the set |
+| Scanner decoy | ComBat-style site shift, sized from real ABIDE sites, on the 10 regions where real sites differ most; linked to the label in training only (50/70/90%), plus a train-and-test comparison |
+| Models | Own MLP and GCN; published brain GNNs added after the core experiment works |
+| Explainers | Saliency, Integrated Gradients, GNNExplainer |
+| Proposed method | **SiteSwap**: penalise the model when its explanation changes between a scan and its site-swapped (ComBat) copy; compared with ComBat harmonisation |
+| Metrics | Disease AUPRC (planted connections), scanner share of the explanation, test accuracy |
+| Evaluation | BrainOOD's 10 leave-site-out folds; 3 fake-label splits x 3 seeds; epoch chosen on validation data only |
 
-Implemented so far: environment, ABIDE download, and connectivity matrices for 848 subjects from 19 sites (AAL-116 and CC200 atlases).
+Progress is checked at three gates: (1) explainers find a strong planted effect; (2) a scanner shortcut pulls explanations towards it; (3) SiteSwap reduces that pull more than ComBat.
+
+Implemented so far:
+- ABIDE download and connectivity matrices (848 subjects, 19 sites).
+- BrainOOD site folds.
+- Region-level planting, checked on real data: all matrices valid, effect within 5% of target.
+- Own MLP and GCN, saliency and Integrated Gradients.
+- **Gate 1 passed:** at strength × 4, the explanations find the planted connections (GCN AUPRC 1.00, MLP 0.99; chance 0.008).
+- Scanner decoy, sized from real ABIDE site differences.
+- **Gate 2 passed:** with a 90% shortcut in training, 45% (MLP) and 28% (GCN) of the top explanation connections move to the scanner regions (from 0%), and disease recovery falls. Test accuracy barely changes, or rises when the shortcut is also in the test data.
+- ComBat harmonisation and SiteSwap.
+- **Gate 3 (non-inferior under the pre-fixed rule):**
+  - ComBat removes the scanner but also most of the disease signal.
+  - SiteSwap with augmentation only gives the best disease recovery (MLP 0.55, GCN 0.34, against ComBat's 0.26 and 0.08).
+  - The explanation-penalty version breaks the GCN.
+
+- With a perfect swap (upper bound), SiteSwap removes the scanner completely (MLP scanner share 0.00, disease AUPRC 0.76). Its practical limit is the ComBat swap, which cannot copy how a scanner effect scales connections, person by person.
+
+In progress: confirmation of augmentation-only SiteSwap on new fake-label splits (3-5, seed 1), with the pass rule fixed before running.
 
 ## Repository layout
 
@@ -38,7 +58,7 @@ CXB/
   configs/         settings (data.yaml)
   data/            raw and processed data (not in git)
   docs/            decisions log and data summary
-  scripts/         numbered pipeline steps
+  scripts/         numbered pipeline steps (01 download, 02 connectomes, 03 planting check, 04 gate 1, 05 gate 2, 06 gate 3)
   src/cxb/         the Python package
   tests/           unit tests
   results/         experiment outputs (not in git)
