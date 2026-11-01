@@ -41,7 +41,7 @@ Mean ± SD over runs (each run = one fake-label split × seed, averaged over the
 | MLP | 80% | 0.68 ± 0.05 | 0.62 ± 0.06 | 0.23 ± 0.06 | 0.31 ± 0.05 |
 | MLP | 90% | 0.67 ± 0.09 | 0.42 ± 0.07 | 0.46 ± 0.07 | 0.53 ± 0.05 |
 
-## 3. Fixing the shortcut: ComBat vs SiteSwap (90% shortcut, saliency, 6 splits x 3 seeds)
+## 3. Fixing the shortcut: ComBat vs CF-Site (90% shortcut, saliency, 6 splits x 3 seeds)
 
 | Design | Model | Method | Test accuracy | Disease AUPRC | Scanner share |
 |---|---|---|---|---|---|
@@ -50,19 +50,19 @@ Mean ± SD over runs (each run = one fake-label split × seed, averaged over the
 | train | GCN | ComBat, no EB (label protected) | 0.57 ± 0.06 | 0.24 ± 0.21 | 0.00 ± 0.01 |
 | train | GCN | ComBat (label protected) | 0.65 ± 0.08 | 0.63 ± 0.28 | 0.00 ± 0.01 |
 | train | GCN | Plain | 0.66 ± 0.07 | 0.58 ± 0.32 | 0.25 ± 0.20 |
-| train | GCN | SiteSwap + penalty | 0.58 ± 0.07 | 0.20 ± 0.18 | 0.00 ± 0.00 |
-| train | GCN | SiteSwap | 0.67 ± 0.06 | 0.73 ± 0.26 | 0.00 ± 0.00 |
-| train | GCN | SiteSwap (EB swap) | 0.69 ± 0.08 | 0.77 ± 0.28 | 0.00 ± 0.01 |
-| train | GCN | SiteSwap perfect swap | 0.74 ± 0.06 | 0.90 ± 0.15 | 0.00 ± 0.00 |
+| train | GCN | CF-Site + penalty | 0.58 ± 0.07 | 0.20 ± 0.18 | 0.00 ± 0.00 |
+| train | GCN | CF-Site | 0.67 ± 0.06 | 0.73 ± 0.26 | 0.00 ± 0.00 |
+| train | GCN | CF-Site (EB swap) | 0.69 ± 0.08 | 0.77 ± 0.28 | 0.00 ± 0.01 |
+| train | GCN | Oracle CF-Site | 0.74 ± 0.06 | 0.90 ± 0.15 | 0.00 ± 0.00 |
 | train | MLP | ComBat, no EB | 0.58 ± 0.07 | 0.19 ± 0.03 | 0.01 ± 0.00 |
 | train | MLP | ComBat | 0.66 ± 0.05 | 0.37 ± 0.05 | 0.49 ± 0.05 |
 | train | MLP | ComBat, no EB (label protected) | 0.54 ± 0.05 | 0.39 ± 0.05 | 0.00 ± 0.00 |
 | train | MLP | ComBat (label protected) | 0.63 ± 0.07 | 0.59 ± 0.07 | 0.16 ± 0.04 |
 | train | MLP | Plain | 0.65 ± 0.07 | 0.44 ± 0.06 | 0.43 ± 0.06 |
-| train | MLP | SiteSwap + penalty | 0.65 ± 0.07 | 0.55 ± 0.06 | 0.30 ± 0.05 |
-| train | MLP | SiteSwap | 0.66 ± 0.07 | 0.59 ± 0.07 | 0.28 ± 0.06 |
-| train | MLP | SiteSwap (EB swap) | 0.65 ± 0.07 | 0.57 ± 0.06 | 0.30 ± 0.06 |
-| train | MLP | SiteSwap perfect swap | 0.67 ± 0.06 | 0.85 ± 0.05 | 0.00 ± 0.00 |
+| train | MLP | CF-Site + penalty | 0.65 ± 0.07 | 0.55 ± 0.06 | 0.30 ± 0.05 |
+| train | MLP | CF-Site | 0.66 ± 0.07 | 0.59 ± 0.07 | 0.28 ± 0.06 |
+| train | MLP | CF-Site (EB swap) | 0.65 ± 0.07 | 0.57 ± 0.06 | 0.30 ± 0.06 |
+| train | MLP | Oracle CF-Site | 0.67 ± 0.06 | 0.85 ± 0.05 | 0.00 ± 0.00 |
 
 ## 4. Real autism labels (no planting; real hospitals as sites)
 
@@ -71,11 +71,11 @@ Mean ± SD over runs (each run = one fake-label split × seed, averaged over the
 | GCN | ComBat, no EB (label protected) | 0.59 ± 0.02 | 0.60 ± 0.01 | -0.06 ± 0.01 | 0.00 ± 0.00 |
 | GCN | ComBat (label protected) | 0.60 ± 0.02 | 0.60 ± 0.01 | -0.07 ± 0.01 | 0.00 ± 0.00 |
 | GCN | Plain | 0.60 ± 0.02 | 0.60 ± 0.03 | -0.11 ± 0.02 | 0.00 ± 0.00 |
-| GCN | SiteSwap | 0.59 ± 0.02 | 0.61 ± 0.01 | -0.12 ± 0.02 | 0.00 ± 0.00 |
-| GCN | SiteSwap (EB swap) | 0.59 ± 0.02 | 0.61 ± 0.01 | -0.12 ± 0.02 | 0.00 ± 0.00 |
+| GCN | CF-Site | 0.59 ± 0.02 | 0.61 ± 0.01 | -0.12 ± 0.02 | 0.00 ± 0.00 |
+| GCN | CF-Site (EB swap) | 0.59 ± 0.02 | 0.61 ± 0.01 | -0.12 ± 0.02 | 0.00 ± 0.00 |
 | MLP | ComBat, no EB (label protected) | 0.58 ± 0.01 | 0.61 ± 0.01 | 0.01 ± 0.00 | 0.00 ± 0.00 |
 | MLP | ComBat (label protected) | 0.59 ± 0.02 | 0.61 ± 0.01 | 0.00 ± 0.00 | 0.00 ± 0.00 |
 | MLP | Plain | 0.63 ± 0.01 | 0.65 ± 0.01 | -0.03 ± 0.00 | 0.00 ± 0.00 |
-| MLP | SiteSwap | 0.62 ± 0.02 | 0.63 ± 0.02 | -0.04 ± 0.00 | 0.00 ± 0.00 |
-| MLP | SiteSwap (EB swap) | 0.62 ± 0.00 | 0.63 ± 0.01 | -0.03 ± 0.00 | 0.00 ± 0.00 |
+| MLP | CF-Site | 0.62 ± 0.02 | 0.63 ± 0.02 | -0.04 ± 0.00 | 0.00 ± 0.00 |
+| MLP | CF-Site (EB swap) | 0.62 ± 0.00 | 0.63 ± 0.01 | -0.03 ± 0.00 | 0.00 ± 0.00 |
 

@@ -19,7 +19,7 @@ Among all the psychiatric disorders, common biomarkers identified are
 
 ---
 
-# Project glossary (CXB / SiteSwap), plain language
+# Project glossary (CXB / CF-Site), plain language
 
 Grouped by topic. Numbers are from our own runs (Oct 2026).
 
@@ -79,7 +79,7 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 - **Shortcut:** when a model predicts from site differences (or another unrelated cue) instead of the disease. The model can look accurate while being right for the wrong reasons.
 - **ComBat / harmonisation:** a statistical method that estimates and removes site effects. We use it to *add* them instead, fitted on training folds only.
 - **Site decoy:** a fake site effect we plant on purpose, to test whether explanations point at it.
-- **SiteSwap (our method):** adds a copy of each training scan moved to another site (via ComBat), with the same label, so the site stops being a useful clue. Only the training data gets extra copies; the test data is not changed. (An early version also penalised explanations that changed with the site; it is now only an ablation.)
+- **CF-Site, counterfactual site training (our method; called SiteSwap until 1 Nov 2026, code name `siteswap`):** adds a counterfactual copy of each training scan moved to another site (via ComBat), with the same label, so the site stops being a useful clue. Only the training data gets extra copies; the test data is not changed. (An early version also penalised explanations that changed with the site; it is now only an ablation.)
 
 ## Planted ground truth (the benchmark, CXB)
 
@@ -126,11 +126,11 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 ## Baselines and the base paper
 
 - **Baseline:** an existing method we compare against.
-- **BrainIB (TNNLS 2025):** the base paper. It's a brain GNN that learns an explanation (a subgraph).
+- **BrainIB (TNNLS 2025):** the original base paper (now cited as related work only). It's a brain GNN that learns an explanation (a subgraph).
   - It uses an **information bottleneck**: keep only the information needed to predict the label.
   - Its mask is sampled with **Gumbel-softmax**, a trick for picking edges at random but in a way that can still be trained.
 - **Weight change:** how much a network's parameters moved during training. A part whose weights never move has learned nothing. We use this as a check that an explanation module is really trained.
-- **Reimplementation:** we write our own BrainIB from the paper's description, because their code has no licence.
+- **Reimplementation:** writing a model ourselves from its paper's description. Done for BrainNetCNN, BrainGNN and Brain Network Transformer. A BrainIB reimplementation was planned (its code has no licence) but dropped; the final paper does not use BrainIB.
 - **CI-GNN, BrainOOD:** other brain GNNs, cited as related work. BrainOOD's leave-site-out folds are used.
 - **Published models (1 Nov 2026):** BrainGNN, BrainNetCNN and Brain Network Transformer, reimplemented from their papers. Only BrainNetCNN passes the sanity test; the other two do not learn from about 250 training subjects.
 - **Holm correction:** a way to adjust p-values when several tests are run together, so that one lucky result does not count as a finding. We use it for the main comparisons.
@@ -142,10 +142,12 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 - **Gate 1:** can a simple model plus explainer find a strong (× 4) planted effect at all? It passes if AUPRC ≥ 0.5. If not, the benchmark idea needs rethinking.
 - **Pass rule fixed in advance (pre-registration):** writing down the success test *before* running an experiment, so it can't be adjusted to fit the results.
 - **Non-inferior:** not clearly better than the competitor by the agreed margin, but not worse either.
-- **Data augmentation:** training on extra, altered copies of the data. In SiteSwap, each scan is copied to the other scanner with the same label, so the scanner stops being a useful clue.
+- **Data augmentation:** training on extra, altered copies of the data. In CF-Site, each scan is copied to the other scanner with the same label, so the scanner stops being a useful clue.
 - **Confirmation run:** repeating an experiment on new, unseen splits to check that a choice made after seeing results still holds.
 - **Oracle / upper bound:** a version of a method given perfect information that's unavailable in practice (here, the true scanner-B copy of each brain). It shows the best the method could ever do.
-- **Ablation:** removing or changing one part of a method to see what that part contributes (here, SiteSwap with and without the explanation penalty).
+- **Counterfactual (scan):** what the same subject's scan would look like at another site, with everything else (brain, diagnosis) unchanged. CF-Site creates these with ComBat's estimates.
+- **Oracle CF-Site:** CF-Site with the true other-scanner scan instead of the ComBat estimate; an upper bound that is not available in practice.
+- **Ablation:** removing or changing one part of a method to see what that part contributes (here, CF-Site with and without the explanation penalty).
 - **Leakage:** label information reaching the model by an unintended route, making results look better or explanations point the wrong way.
 - **Drift curve:** the same experiment repeated as the shortcut grows stronger (50% to 90%), showing when explanations start to move to the scanner.
 - **Covariate inflation:** when batch correction protects a variable such as the diagnosis, it can make the groups look more different than they are. It's a known pitfall of ComBat with unbalanced sites.

@@ -1,14 +1,15 @@
-"""Gate 3 / fixes comparison: which fixes keep explanations on the disease (ComBat versions, SiteSwap)?
+"""Gate 3 / fixes comparison: which fixes keep explanations on the disease (ComBat versions, CF-Site)?
 
 Same data as gate 2 (disease x2 plus scanner-B decoy), with the 90% shortcut, in the
 train-only and the train-and-test designs. Methods (scanner A/B known for every subject):
   plain          train on the data as is
   combat         ComBat harmonisation, no covariates (fitted on training subjects)
   combat_protect ComBat with the label protected (labels for train/val; average for test)
-  siteswap_aug   train on original + ComBat site-swapped copy (same label)
+  siteswap_aug   CF-Site training (counterfactual site training): original + ComBat
+                 counterfactual copy at the other scanner (same label)
   siteswap       siteswap_aug + saliency-consistency penalty (lam = 1)
   siteswap_oracle siteswap_aug with the true other-scanner version of each brain (upper
-                 bound: what SiteSwap achieves with a perfect swap; not usable in practice)
+                 bound: what CF-Site achieves with a perfect swap; not usable in practice)
 Scores as in gate 2 (test site, group attributions): disease AUPRC, scanner share, accuracy.
 Pass rule: docs/decisions.md (fixed before running).
 
@@ -44,7 +45,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--splits", type=int, default=3)
     ap.add_argument("--first-split", type=int, default=0)
-    ap.add_argument("--main", default="siteswap", help="SiteSwap variant judged by the pass rule")
+    ap.add_argument("--main", default="siteswap", help="CF-Site variant judged by the pass rule")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--designs", default="train,both")
     ap.add_argument("--decoy", default="timeseries", choices=["timeseries", "edge"])

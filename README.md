@@ -6,7 +6,7 @@ Code and notes for an M.Tech dissertation on graph neural networks (GNNs) in med
 
 **Question:** when a brain GNN highlights connections, has it found the disease or the scanner?
 
-Brain-GNN papers usually validate their explanations by matching them to published findings, because real data has no known correct answer. This project creates one. It plants a known connectivity effect into real healthy-control connectomes from ABIDE, adds a fake scanner shortcut, and measures whether explanations point at the planted effect or at the scanner. It then asks which fixes keep explanations on the disease: ComBat harmonisation (four versions) and **SiteSwap**, a simple training-side alternative.
+Brain-GNN papers usually validate their explanations by matching them to published findings, because real data has no known correct answer. This project creates one. It plants a known connectivity effect into real healthy-control connectomes from ABIDE, adds a fake scanner shortcut, and measures whether explanations point at the planted effect or at the scanner. It then asks which fixes keep explanations on the disease: ComBat harmonisation (four versions) and **counterfactual site training (CF-Site)**, a simple training-side alternative.
 
 | Part | Choice |
 |---|---|
@@ -15,7 +15,7 @@ Brain-GNN papers usually validate their explanations by matching them to publish
 | Scanner decoy | Site shift sized from real ABIDE sites, on the 10 regions where real sites differ most; linked to the label in training only (50-90%). Main version: person-specific (added in the time series); robustness version: a fixed shift per connection (exactly ComBat's model) |
 | Models | Logistic regression, MLP, GCN (BrainGB set-up), BrainNetCNN (reimplemented from its paper). BrainGNN and Brain Network Transformer were also reimplemented but fail the sanity test at this sample size |
 | Explainers | Saliency, Integrated Gradients, GNNExplainer-style input mask |
-| Fixes compared | ComBat harmonisation (with and without empirical Bayes and label protection) and **SiteSwap**: each training scan gets a copy moved to the other scanner with ComBat's estimates (label kept), and the model trains on both. A perfect swap (true other-scanner scan) is the upper bound |
+| Fixes compared | ComBat harmonisation (with and without empirical Bayes and label protection) and **CF-Site** (counterfactual site training; code name `siteswap`): each training scan is paired with its counterfactual at the other scanner, generated from ComBat's estimates with the label kept, and the model trains on both. Oracle CF-Site (the true other-scanner scan) is the upper bound |
 | Metrics | Disease AUPRC (planted connections), scanner share of the explanation, test accuracy |
 | Evaluation | BrainOOD's 10 leave-site-out folds; 6 fake-label splits x 3 seeds for the methods comparison (3 x 3 elsewhere); epoch chosen on validation data only, after a 30-epoch warm-up; statistics per split (bootstrap CI, sign test, paired t-test; Holm correction for the main comparisons) |
 
@@ -27,20 +27,20 @@ Final results ([CXB/docs/stats.md](CXB/docs/stats.md), [CXB/docs/results.md](CXB
 - **Other models:** BrainNetCNN passes the sanity test (AUPRC 1.00 at x4) and fails differently: under the 90% shortcut its explanations stay on the disease (AUPRC 0.99, scanner share 0.03), but its accuracy drops by 0.12 (0.95 to 0.83; 3 splits x 2 seeds). BrainGNN and Brain Network Transformer do not learn even the strong planted effect from about 250 training subjects (accuracy about 0.60, AUPRC under 0.1, also after a fixed tuning budget), so their explanations cannot be judged at this sample size.
 - **Explanations drift, accuracy does not:** going from a 50% to a 90% scanner shortcut, 46% (MLP) and 22% (GCN) of the top explanation connections move to the scanner regions and disease recovery drops by 0.27-0.37, while test accuracy falls only 0.04-0.06.
 - **Fixes: the ComBat version decides the outcome.** Under the 90% shortcut (6 splits x 3 seeds), GCN disease recovery ranges from 0.02 to 0.63 across the four ComBat versions (MLP 0.19 to 0.59); only standard ComBat with the diagnosis protected works well. Without label protection, standard ComBat leaves the MLP on the scanner (share 0.49; plain 0.43).
-- **SiteSwap is a safe training-side fix:** it beats the plain model clearly (disease AUPRC +0.15 for both models, Holm-adjusted p ≤ 0.001) and matches the best ComBat (MLP -0.00; GCN +0.10, a tie after Holm correction, p 0.07), with slightly higher accuracy (+0.03), whichever ComBat it takes its swap from (MLP 0.57-0.59, GCN 0.73-0.77), and new-site data need no harmonisation at test time. For the MLP it leaves more scanner share than protected ComBat (0.28 vs 0.16).
-- **The limit is the scanner model, not the method:** SiteSwap and ComBat use the same estimate of the scanner effect, which assumes one fixed shift per connection; with the true other-scanner scan (perfect swap) disease recovery reaches 0.85 (MLP) and 0.90 (GCN) and the scanner share falls to 0.00.
+- **CF-Site is a safe training-side fix:** it beats the plain model clearly (disease AUPRC +0.15 for both models, Holm-adjusted p ≤ 0.001) and matches the best ComBat (MLP -0.00; GCN +0.10, a tie after Holm correction, p 0.07), with slightly higher accuracy (+0.03), whichever ComBat it takes its swap from (MLP 0.57-0.59, GCN 0.73-0.77), and new-site data need no harmonisation at test time. For the MLP it leaves more scanner share than protected ComBat (0.28 vs 0.16).
+- **The limit is the scanner model, not the method:** CF-Site and ComBat use the same estimate of the scanner effect, which assumes one fixed shift per connection; with the true other-scanner scan (perfect swap) disease recovery reaches 0.85 (MLP) and 0.90 (GCN) and the scanner share falls to 0.00.
 - **The check works without ground truth:** the scanner-affected connections can be found from training data alone. Of the 45 connections that differ most between scanners in the training data, 93-100% touch the scanner regions and at most 5% are disease connections ([scripts/16_audit_check.py](CXB/scripts/16_audit_check.py)), so the scanner share of an explanation can be measured on real data.
-- **Robustness:** with a ComBat-friendly decoy SiteSwap is slightly ahead of standard ComBat (MLP +0.02, GCN +0.09). With a second set of disease and decoy regions the two tie; there the plain GCN ignores the scanner, and SiteSwap costs it a little (-0.03 AUPRC), while for the MLP SiteSwap still beats plain by +0.13.
+- **Robustness:** with a ComBat-friendly decoy CF-Site is slightly ahead of standard ComBat (MLP +0.02, GCN +0.09). With a second set of disease and decoy regions the two tie; there the plain GCN ignores the scanner, and CF-Site costs it a little (-0.03 AUPRC), while for the MLP CF-Site still beats plain by +0.13.
 - **The real hospital signal is strong:** from the same connectomes, a logistic regression predicts the hospital with balanced accuracy 0.70 (chance 0.05, 19 hospitals) but autism only 0.64 (chance 0.50). The scanner is the easier thing to learn, which is what makes the shortcut a real risk.
-- **Real autism labels:** explanations do not follow the hospital effect for any method (standard ComBat included); SiteSwap keeps the plain model's accuracy (MLP 0.629 vs 0.632; standard protected ComBat 0.603).
+- **Real autism labels:** explanations do not follow the hospital effect for any method (standard ComBat included); CF-Site keeps the plain model's accuracy (MLP 0.629 vs 0.632; standard protected ComBat 0.603).
 - **Label-protected ComBat** can inflate group differences (Nygaard et al., 2016): with the simplified ComBat the diagnosis becomes predictable from scanner-related connections (AUC 0.89 vs 0.69 raw), and its high accuracy when the shortcut is also in the test data is an artefact. Standard (empirical-Bayes) ComBat largely removes this (AUC 0.72).
-- The explanation-consistency penalty (an early SiteSwap variant) hurts the GCN (disease AUPRC 0.20) and is reported only as an ablation.
+- The explanation-consistency penalty (an early CF-Site variant) hurts the GCN (disease AUPRC 0.20) and is reported only as an ablation.
 
 ## Repository layout
 
 | Folder | Contents |
 |---|---|
-| [CXB/](CXB/) | CXB benchmark and the SiteSwap method |
+| [CXB/](CXB/) | CXB benchmark and the CF-Site method |
 | [Literature/](Literature/) | Reading notes and literature list (the papers themselves are not in the repo) |
 | [MLFGNN/](MLFGNN/) | Centre-aware population graph for head-and-neck cancer survival (TCIA); synthetic data only |
 | [HNC GNN/](HNC%20GNN/) | Earlier head-and-neck cancer pipeline |

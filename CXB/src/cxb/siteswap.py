@@ -1,4 +1,5 @@
-"""SiteSwap: train so that the explanation does not depend on the site.
+"""CF-Site training (counterfactual site training; code name "siteswap"): train so that the
+explanation does not depend on the site.
 
 For every training subject, ComBat (fitted on the training data, label protected) makes a
 site-swapped copy: the same brain as if scanned on the other scanner. Training uses

@@ -2,14 +2,14 @@
 
 Last updated 1 Nov 2026. Full list of papers to cite, with the reading order: [literature-list.md](literature-list.md).
 Verdict = what the paper means for our novelty claims:
-C1 = planted-ground-truth benchmark, C2 = ground-truth test of shortcut-robust brain GNNs, C3 = GNN vs simple-model explanations, C4 = SiteSwap.
+C1 = planted-ground-truth benchmark, C2 = ground-truth test of shortcut-robust brain GNNs, C3 = GNN vs simple-model explanations, C4 = CF-Site.
 
 ## Status at a glance
 
 - **Novelty:** holds after full-text checks of 11 papers and a 2026 search (14 new peer-reviewed papers, abstracts only). No paper plants known effects into real connectomes to test GNN explanations.
 - **Claim wording:** "first to test GNN explanations with planted effects in real connectomes", never "first to plant effects in real data" (Beer 2020 and Reynolds 2023 did that for harmonisation).
 - **Preprints in this folder** (EGS, XIGL): read for awareness only; do not cite in the literature review unless a peer-reviewed version appears.
-- **1 Nov 2026 update:** list rebuilt for the final scope. Added and checked on OpenAlex: the planting and explanation-evaluation precedents closest to CXB (Adebayo et al. ICLR 2022, Zhou et al. AAAI 2022, CLEVR-XAI, Sanity checks), the saliency and GCN papers, BrainNetCNN, shortcut papers (Zech 2018, Brown 2023), ComBat pitfalls (Nygaard 2016, Wachinger 2021, Dinsdale 2021) and SiteSwap's closest general methods (Gao et al. ICML 2023 targeted augmentations, Kaushik 2020, Ilse 2021). None plants effects into real connectomes, so the novelty claim stands. **Gao et al. 2023 is now the closest method to SiteSwap** and must be named in the related work: SiteSwap is targeted augmentation with ComBat's site model, applied to connectomes and judged by explanations.
+- **1 Nov 2026 update:** list rebuilt for the final scope. Added and checked on OpenAlex: the planting and explanation-evaluation precedents closest to CXB (Adebayo et al. ICLR 2022, Zhou et al. AAAI 2022, CLEVR-XAI, Sanity checks), the saliency and GCN papers, BrainNetCNN, shortcut papers (Zech 2018, Brown 2023), ComBat pitfalls (Nygaard 2016, Wachinger 2021, Dinsdale 2021) and CF-Site's closest general methods (Gao et al. ICML 2023 targeted augmentations, Kaushik 2020, Ilse 2021). None plants effects into real connectomes, so the novelty claim stands. **Gao et al. 2023 is now the closest method to CF-Site** and must be named in the related work: CF-Site is targeted augmentation with ComBat's site model, applied to connectomes and judged by explanations.
 
 ## Batch 1: full text checked
 
@@ -43,8 +43,8 @@ From the 28 Oct 2026 search (Consensus, 2026 only, preprints excluded). Full det
 | H13 | Kurashkin et al., four-axis reporting standard for GNN evaluation | MAKE 2026 | Checklist: seeds, significance tests, tuned trivial baselines, leakage; only 2 of 25 core studies ran a significance test | **High: follow and cite** |
 | H12 | Fang et al., OAR/OAR+ explanation evaluation | IEEE TPAMI 2026 | Explanation metric that avoids out-of-distribution inputs | **High: candidate metric** |
 | H11 | Zhang, Tuzhilina & Park, SLACC site effect correction | Biostatistics 27, 2026 | Localised site effects on ABIDE connectivity; ComBat alternative | **High: justify generator choice** |
-| H2 | Hu et al., BrainIB++ | BSPC 2026 | Newest information-bottleneck brain GNN; code public | **High: candidate baseline** |
-| H6 | Zhao et al., unified graph domain adaptation, cross-site | IEEE TMI 2026 | Adversarial site alignment (like SiteSwap's site head) | Medium |
+| H2 | Hu et al., BrainIB++ | BSPC 2026 | Newest information-bottleneck brain GNN; code public | Related work (no new baselines; decided 1 Nov 2026) |
+| H6 | Zhao et al., unified graph domain adaptation, cross-site | IEEE TMI 2026 | Adversarial site alignment (like CF-Site's site head) | Medium |
 | H3 | Zheng et al., ensemble GNN for MDD subtyping | PLOS Digit Health 2026 | Leave-one-site-out vs BrainIB and CI-GNN; ComBat | Medium |
 | H4 | Wang et al., JNEL-GCN for ADHD | IEEE TMI 2026 | Claims 97% on ADHD-200 and ABIDE-I (vs about 61% in H1); biomarkers checked against literature | Medium: cite neutrally |
 | H5, H7–H10 | Xia (MedIA), Ji (TBME), Ji (ISBI), Lan (ISBI), He DPGR-Net (Neural Networks) | 2026 | Interpretable or site-robust brain GNNs; related work | Low |
@@ -66,7 +66,7 @@ From the 28 Oct 2026 search (Consensus, 2026 only, preprints excluded). Full det
 |---|---|---|
 | 1 | D11 Adebayo 2022, D12 Zhou 2022, D5 GraphXAI | Closest prior work to the benchmark; related-work section |
 | 1 | B1 BrainGNN, B8 BrainNetCNN, B3 BNT | Needed to reimplement the models |
-| 1 | E6 Gao 2023 | Closest method to SiteSwap |
+| 1 | E6 Gao 2023 | Closest method to CF-Site |
 | 1 | F1 Johnson 2007, F3 Yu 2018 (Methods), F9 Nygaard 2016 | ComBat and its pitfalls |
 | 1 | D9 Simonyan, D3 IG, D1 GNNExplainer, D7 Faber | Explainers and the main objection |
 | 2 | A4, A9, A10, A7, F10, F11, E5, E7, D10, D13, D8, H1, H13, H14 | Supporting citations |

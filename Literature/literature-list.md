@@ -1,6 +1,6 @@
 # Literature list for the CXB paper
 
-Paper: "Do brain GNN explanations find the disease or the scanner?" (CXB benchmark + SiteSwap).
+Paper: "Do brain GNN explanations find the disease or the scanner?" (CXB benchmark + CF-Site).
 First built 28 Oct 2026; rebuilt 1 Nov 2026 for the final scope (planting, explainers, published brain models, site effects).
 
 **Rules**
@@ -75,6 +75,8 @@ Access: **OA** = free at the publisher · **Proc.** = free conference proceeding
 | A7 | Abraham et al., Deriving reproducible biomarkers from multi-site resting-state data: an autism-based example. *NeuroImage* 147:736ff, 2017. doi:10.1016/j.neuroimage.2016.10.045 | 701 | ABIDE site effects; leave-site-out testing | Author copy | Get |
 | F10 | Wachinger et al., Detect and correct bias in multi-site neuroimaging datasets. *Medical Image Analysis* 67:101879, 2021. doi:10.1016/j.media.2020.101879 | 115 | Site bias in multi-site neuroimaging; harmonisation as a fix | Author copy | Get |
 | F11 | Dinsdale, Jenkinson & Namburete, Deep learning-based unlearning of dataset bias for MRI harmonisation and confound removal. *NeuroImage* 228:117689, 2021. doi:10.1016/j.neuroimage.2020.117689 | 178 | Adversarial scanner unlearning; named as future comparison | OA | Get |
+| F12 | Tian et al., A deep learning-based multisite neuroimage harmonization framework established with a traveling-subject dataset. *NeuroImage*, 2022 | – | Learned harmonisation from travelling subjects; a possible better scanner model for CF-Site (future work) | OA | Optional |
+| F13 | Hu et al., DeepComBat: a statistically motivated, hyperparameter-robust, deep learning approach to harmonization of neuroimaging data. *Human Brain Mapping*, 2024 (PMC11273293) | – | ComBat inside a conditional VAE; a possible better scanner model for CF-Site (future work) | OA | Optional |
 
 ## F. Harmonisation (ComBat and its pitfalls)
 
@@ -88,13 +90,16 @@ Access: **OA** = free at the publisher · **Proc.** = free conference proceeding
 | F8 | Xin et al., ComBat-Predict enhances generalizability of neuroimaging models to new sites. *Human Brain Mapping* 47, 2026 | – | ComBat for unseen sites | OA | Optional |
 | H11 | Zhang, Tuzhilina & Park, Sparse covariate-driven factorization of brain connectivity with application to site effect correction (SLACC). *Biostatistics* 27, 2026 | – | Localised site effects in ABIDE connectivity; supports our localised decoy | Check | Optional |
 
-## W. SiteSwap's neighbours: augmentation against spurious features
+## W. CF-Site's neighbours: augmentation against spurious features
 
 | # | Reference | Cites | Use in the paper | Access | Status |
 |---|---|---|---|---|---|
 | E5 | Kaushik, Hovy & Lipton, Learning the difference that makes a difference with counterfactually-augmented data. *ICLR*, 2020 | 253 | Counterfactual augmentation: change the spurious part, keep the label | Proc. | Get |
-| E6 | Gao, Sagawa, Koh, Hashimoto & Liang, Out-of-domain robustness via targeted augmentations. *ICML*, PMLR 202, 2023 | – | **Closest general method:** randomise domain-dependent features, keep the label. SiteSwap is this idea with ComBat's site model | Proc. | Get |
+| E6 | Gao, Sagawa, Koh, Hashimoto & Liang, Out-of-domain robustness via targeted augmentations. *ICML*, PMLR 202, 2023 | – | **Closest general method:** randomise domain-dependent features, keep the label. CF-Site is this idea with ComBat's site model | Proc. | Get |
 | E7 | Ilse, Tomczak & Forré, Selecting data augmentation for simulating interventions. *ICML*, PMLR 139, 2021 | 35 | Augmentation as an intervention on the spurious variable (theory) | Proc. | Get |
+| E8 | Wang, Chaudhari & Davatzikos, Harmonization with flow-based causal inference. *MICCAI* (LNCS 12903):181ff, 2021. doi:10.1007/978-3-030-87199-4_17 | – | **Counterfactual harmonisation:** site counterfactuals from a causal normalising flow, used to remove site effects | Proc. | Get |
+| E9 | Vigneshwaran, Wilms, Camacho, Souza & Forkert, Improved multi-site Parkinson's disease classification using neuroimaging data with counterfactual inference. *MIDL*, PMLR 227:1304ff, 2023 | – | **Closest to CF-Site:** trains a classifier on site counterfactuals (causal flow) and gains accuracy on an unseen site. CF-Site differs: ComBat counterfactuals, connectomes, and judged by explanations against a ground truth | Proc. (OA) | Must read |
+| E10 | Pawlowski, Coelho de Castro & Glocker, Deep structural causal models for tractable counterfactual inference. *NeurIPS*, 2020 | – | Foundation of image counterfactuals in medical imaging | Proc. | Optional |
 | E4 | Liu et al., Rationalizing graph neural networks with data augmentation (RGDA). *ACM TKDD* 18(4), 2024. doi:10.1145/3638781 | 15 | Closest graph method: swaps environment subgraphs | Check | Have |
 | E2 | Sui et al., Causal attention for interpretable and generalizable graph classification (CAL). *KDD*, pp. 1696ff, 2022. doi:10.1145/3534678.3539366 | 195 | Shortcut-feature mixing on graphs | Author copy | Optional |
 | E1 | Wu et al., Discovering invariant rationales for graph neural networks (DIR). *ICLR*, 2022 | – | Invariant rationales; related | Proc. | Optional |
@@ -140,13 +145,13 @@ If the new models use PyTorch Geometric, also cite Fey & Lenssen, ICLR Workshop 
 
 ## No longer used (kept for the record)
 
-D2 PGExplainer and D4 GSAT (no learned edge masks in the final method), E3 CAL+ (journal version of E2), F7 Wang 2023 harmonisation review, G3–G4 ADHD-200 (no replication dataset), G6 CC200 and G7 Yeo-7 (AAL only; SiteSwap uses no network prior), Captum (our explainers are our own code).
+D2 PGExplainer and D4 GSAT (no learned edge masks in the final method), E3 CAL+ (journal version of E2), F7 Wang 2023 harmonisation review, G3–G4 ADHD-200 (no replication dataset), G6 CC200 and G7 Yeo-7 (AAL only; CF-Site uses no network prior), Captum (our explainers are our own code).
 
 ## Reading order for the paper
 
 Read in this order. Tier 1 is what the paper cannot be written without; for Tier 3, abstract and the relevant section are enough.
 
-**Tier 1: core (about 15 papers; read fully)**
+**Tier 1: core (about 16 papers; read fully)**
 
 | Order | Paper | Why first | Paper section |
 |---|---|---|---|
@@ -159,12 +164,13 @@ Read in this order. Tier 1 is what the paper cannot be written without; for Tier
 | 7 | D9 Simonyan 2014, D3 IG 2017, D1 GNNExplainer 2019 | The three explainers we use | Methods: explainers |
 | 8 | D7 Faber 2021 | The main objection to ground-truth evaluation; answer it | Discussion |
 | 9 | B2 BrainGB 2023 | How our GCN is built; the standard brain-GNN pipeline | Methods: models |
-| 10 | B1 BrainGNN 2021 | Next model to implement | Methods: models |
-| 11 | B8 BrainNetCNN 2017 | Model to implement | Methods: models |
-| 12 | B3 BNT 2022 | Model to implement | Methods: models |
-| 13 | F1 Johnson 2007 + F3 Yu 2018 | ComBat, and ComBat on connectivity | Methods: ComBat, SiteSwap |
+| 10 | B1 BrainGNN 2021 | Reimplemented; fails the sanity test (report why) | Methods: models, Scope |
+| 11 | B8 BrainNetCNN 2017 | Used as the second architecture family | Methods: models |
+| 12 | B3 BNT 2022 | Reimplemented; fails the sanity test | Methods: models, Scope |
+| 13 | F1 Johnson 2007 + F3 Yu 2018 | ComBat, and ComBat on connectivity | Methods: ComBat, CF-Site |
 | 14 | F9 Nygaard 2016 | Why label-protected ComBat inflates results | Results, Discussion |
-| 15 | E6 Gao 2023 | Closest general method to SiteSwap; state the difference | Related work: SiteSwap |
+| 15 | E6 Gao 2023 | Closest general method to CF-Site; state the difference | Related work: CF-Site |
+| 16 | E9 Vigneshwaran 2023 (+ E8 Wang 2021) | Closest neuroimaging work: training on site counterfactuals; state the difference (we judge explanations against a ground truth) | Related work: CF-Site |
 
 **Tier 2: support (read the key sections)**
 
@@ -172,4 +178,4 @@ A4 Geirhos 2020, A9 Zech 2018, A10 Brown 2023 (shortcuts) · A7 Abraham 2017, C3
 
 **Tier 3: cite only (abstract enough)**
 
-B9 Kipf 2017, G1, G2, G5, G9, G10, A6 Rosenblatt 2024, H13 Kurashkin 2026, F2 Fortin 2017, F6 Reynolds 2023, B4 IBGNN, B10 ALTER, C1 BrainIB, C4–C6, H2–H12, E1, E2, D6.
+B9 Kipf 2017, B11 Veličković 2018, G11 Craddock 2012, E10 Pawlowski 2020, F12 Tian 2022, F13 Hu 2024, G1, G2, G5, G9, G10, A6 Rosenblatt 2024, H13 Kurashkin 2026, F2 Fortin 2017, F6 Reynolds 2023, B4 IBGNN, B10 ALTER, C1 BrainIB, C4–C6, H2–H12, E1, E2, D6.

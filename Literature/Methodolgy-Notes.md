@@ -26,7 +26,7 @@ ABIDE controls ──► fake patient / fake control labels ──► plant a kn
                                                                  ▼
                           train MLP / GNN ──► explainer ──► compare with the planted answer (AUPRC)
                                                                  │
-                     SiteSwap (our method) should find the planted signal, not the site effect
+                     CF-Site (our method) should find the planted signal, not the site effect
 ```
 
 Then the explainers that pass are used on real autism data (and other disorders if time allows; only ABIDE is set up so far).
@@ -86,8 +86,8 @@ Code: `CXB/src/cxb/planting.py`, check script `03_plant_check.py`, 18 tests pass
 - The results and observations are kept in the private file `CXB/docs/baseline-notes.md`, which is not on GitHub because this repo is public.
 - **Decisions:**
   - We don't contact the authors, and the paper makes no claims about their code.
-  - We **rewrite BrainIB ourselves** from the paper's description.
-  - We report our numbers next to the paper's, marked "as reported (different protocol)".
+  - A reimplementation from the paper's description was planned but **not done**: the final paper does not use BrainIB (decided 1 Nov 2026). It is cited as related work only.
+  - Any published number we cite is marked "as reported (different protocol)".
 - **Why honest scoring matters for us:** choosing the best epoch by test accuracy inflates results, so we always choose the epoch on validation data.
 
 ## Step 5: Repo hygiene (done)
@@ -169,7 +169,7 @@ Code: `src/cxb/decoy.py`, `scripts/05_gate2.py`. 27 tests pass.
 
 ## Step 8: Gate 3 (done, 31 Oct 2026): non-inferior, not a clean pass
 
-**Question:** does SiteSwap keep explanations on the disease better than the obvious fix, ComBat harmonisation?
+**Question:** does CF-Site keep explanations on the disease better than the obvious fix, ComBat harmonisation?
 
 **Setup:**
 - Same data as gate 2 (disease × 2, 90% scanner shortcut).
@@ -178,8 +178,8 @@ Code: `src/cxb/decoy.py`, `scripts/05_gate2.py`. 27 tests pass.
   1. **Plain:** no fix.
   2. **ComBat:** removes scanner differences before training.
   3. **ComBat, label protected:** removes scanner differences while trying to keep the label effect.
-  4. **SiteSwap-augmentation:** also trains on a copy of each scan moved to the other scanner (with ComBat), with the same label, so the scanner stops being a useful clue.
-  5. **SiteSwap (full):** augmentation plus a penalty when the explanation differs between a scan and its copy.
+  4. **CF-Site-augmentation:** also trains on a copy of each scan moved to the other scanner (with ComBat), with the same label, so the scanner stops being a useful clue.
+  5. **CF-Site (full):** augmentation plus a penalty when the explanation differs between a scan and its copy.
 
 **Results (shortcut in training only, saliency, 10 folds × 3 splits):**
 
@@ -188,19 +188,19 @@ Code: `src/cxb/decoy.py`, `scripts/05_gate2.py`. 27 tests pass.
 | Plain | 0.39 | 0.44 | 0.21 | 0.29 |
 | ComBat | 0.10 | 0.01 | 0.02 | 0.01 |
 | ComBat, label protected | 0.26 | 0.01 | 0.08 | 0.01 |
-| **SiteSwap-augmentation** | **0.55** | 0.23 | **0.34** | **0.005** |
-| SiteSwap (full) | 0.51 | 0.23 | 0.02 | 0.004 |
+| **CF-Site-augmentation** | **0.55** | 0.23 | **0.34** | **0.005** |
+| CF-Site (full) | 0.51 | 0.23 | 0.02 | 0.004 |
 
 **Official verdict (rule fixed before running): non-inferior.**
-- The rule judged the *full* SiteSwap.
+- The rule judged the *full* CF-Site.
 - For the MLP, it found the disease far better than ComBat (+0.25), but kept more scanner share (+0.22), so it doesn't count as a pass.
 - For the GCN, the explanation penalty broke the model (0.02).
 
 **What it shows:**
 1. **ComBat's dilemma is real.** It removes the scanner, but takes most of the disease signal with it, even when protecting the label.
-2. **The simple version of SiteSwap (augmentation only) is the best method for both models.** It recovers the disease better than every other method, including the plain model, and removes the scanner completely from the GCN's explanation.
+2. **The simple version of CF-Site (augmentation only) is the best method for both models.** It recovers the disease better than every other method, including the plain model, and removes the scanner completely from the GCN's explanation.
 3. **The explanation penalty hurts.** The simpler method is better, matching the earlier rule: simplify, don't add.
-4. The MLP still keeps about 0.23 scanner share with SiteSwap, so the shortcut isn't fully removed for it.
+4. The MLP still keeps about 0.23 scanner share with CF-Site, so the shortcut isn't fully removed for it.
 
 **Important:** we picked augmentation-only *after* seeing these results. To be valid, it must be confirmed on **new** fake-label splits and seeds, with a pass rule fixed in advance.
 
@@ -208,8 +208,8 @@ Code: `src/cxb/combat.py`, `src/cxb/siteswap.py`, `scripts/06_gate3.py`. 31 test
 
 ### Why the MLP still looks at the scanner (investigation, 31 Oct 2026)
 
-- **Test:** we have the *true* scanner-B version of every brain, so SiteSwap can be trained with a perfect swap. Result for the MLP: scanner share **0.00**, disease AUPRC **0.76** (with the ComBat swap: 0.21 and 0.65).
-- **So the SiteSwap idea works.** The problem is the swap.
+- **Test:** we have the *true* scanner-B version of every brain, so CF-Site can be trained with a perfect swap. Result for the MLP: scanner share **0.00**, disease AUPRC **0.76** (with the ComBat swap: 0.21 and 0.65).
+- **So the CF-Site idea works.** The problem is the swap.
 - **Where the swap fails:** on the ~960 connections from the scanner regions to the rest of the brain. There, the scanner effect *shrinks* values towards zero, a multiplication rather than a shift.
   - ComBat adjusts each connection separately and can't copy this exactly for each person.
   - A simple classifier can still tell the label from those connections after the swap (AUC 0.88; perfect swap 0.43).
@@ -218,26 +218,26 @@ Code: `src/cxb/combat.py`, `src/cxb/siteswap.py`, `scripts/06_gate3.py`. 31 test
   - ComBat estimated on other people only (cross-fitting);
   - matching within each label group (0.98, worse).
 - **Conclusion for the paper:**
-  - SiteSwap is only as good as its swap.
+  - CF-Site is only as good as its swap.
   - Report the perfect swap as the upper bound, and the ComBat swap as the practical version.
   - Better swap models are future work.
 
 ### Confirmation run: PASSED (31 Oct 2026)
 
-New fake-label splits (3–5) and a new seed, because the simple version was picked after seeing results. Same pass rule, applied to augmentation-only SiteSwap. Shortcut in training only, saliency:
+New fake-label splits (3–5) and a new seed, because the simple version was picked after seeing results. Same pass rule, applied to augmentation-only CF-Site. Shortcut in training only, saliency:
 
 | Method | MLP disease AUPRC | MLP scanner share | GCN disease AUPRC | GCN scanner share |
 |---|---|---|---|---|
 | Plain | 0.44 | 0.41 | 0.60 | 0.23 |
 | ComBat | 0.11 | 0.01 | 0.02 | 0.01 |
 | ComBat, label protected | 0.30 | 0.01 | 0.12 | 0.00 |
-| **SiteSwap** | **0.60** | 0.21 | **0.53** | **0.00** |
-| SiteSwap + penalty (ablation) | 0.52 | 0.20 | 0.06 | 0.00 |
-| SiteSwap, perfect swap (upper bound) | 0.74 | 0.00 | 0.80 | 0.00 |
+| **CF-Site** | **0.60** | 0.21 | **0.53** | **0.00** |
+| CF-Site + penalty (ablation) | 0.52 | 0.20 | 0.06 | 0.00 |
+| Oracle CF-Site (upper bound) | 0.74 | 0.00 | 0.80 | 0.00 |
 
 - **GCN:** pass, at +0.41 disease AUPRC over the best ComBat, with no scanner share.
 - **MLP:** non-inferior. It finds the disease much better (+0.30), but keeps 0.21 scanner share.
-- **Honest note:** on these splits, the plain GCN finds the disease slightly better than SiteSwap (0.60 vs 0.53), but 23% of its explanation points at the scanner. SiteSwap's gain over the plain model is removing the scanner, not always a higher disease score.
+- **Honest note:** on these splits, the plain GCN finds the disease slightly better than CF-Site (0.60 vs 0.53), but 23% of its explanation points at the scanner. CF-Site's gain over the plain model is removing the scanner, not always a higher disease score.
 
 ## Step 9: Paper runs overnight (done, 31 Oct 2026)
 
@@ -268,9 +268,9 @@ Four experiments, all on 10 site folds, 3 fake-label splits and 3 seeds unless n
 - Accuracy never moves. **This is the paper's main message:** accuracy can't tell you the explanation has moved to the scanner.
 
 **3. Real autism labels (no planting; the real hospitals are the sites).**
-- Test AUC: MLP 0.66 (plain), 0.64 (ComBat, label protected), 0.65 (SiteSwap); GCN about 0.59–0.60 for all three.
+- Test AUC: MLP 0.66 (plain), 0.64 (ComBat, label protected), 0.65 (CF-Site); GCN about 0.59–0.60 for all three.
 - How closely explanations follow the real hospital effect (Spearman): close to zero, or slightly negative, for every method.
-- So with real labels this check can't separate the methods. It shows that SiteSwap costs no accuracy. It's a sanity check, not evidence for SiteSwap.
+- So with real labels this check can't separate the methods. It shows that CF-Site costs no accuracy. It's a sanity check, not evidence for CF-Site.
 
 **4. Why label-protected ComBat gets high accuracy.**
 - Protected ComBat puts the fitted label effect back into the training data. Groups then look more different than they really are, a known side effect of batch correction with covariates.
@@ -287,7 +287,7 @@ A self-review, done as a guide or reviewer would, found the numbers clean (no le
 3. **Robustness check with a ComBat-friendly scanner effect** (the same shift on every decoy connection), to answer "the decoy is built to defeat ComBat".
 4. **Statistics at the split level** (folds share training data): mean difference, bootstrap CI, sign test. Accuracy is pooled over all test subjects, with a check without the two smallest test sites.
 5. **Real labels:** the explanation–hospital correlation is now corrected for connection strength. The GCN's saliency prefers weak connections, which made the raw correlation negative.
-6. **Positioning:** the benchmark is the main contribution; SiteSwap is presented as a simple counterfactual site augmentation. Cite CFBrainAug (preprint), targeted augmentations (Gao et al., ICML 2023, the closest general method), counterfactual augmentation (Kaushik et al., ICLR 2020), adversarial scanner unlearning (Dinsdale 2021) and GraphXAI.
+6. **Positioning:** the benchmark is the main contribution; CF-Site is presented as a simple counterfactual site augmentation. Cite CFBrainAug (preprint), targeted augmentations (Gao et al., ICML 2023, the closest general method), counterfactual augmentation (Kaushik et al., ICLR 2020), adversarial scanner unlearning (Dinsdale 2021) and GraphXAI.
 
 All paper numbers come from `CXB/results/final/`. The earlier gate results remain the record of how the method was developed.
 
@@ -299,10 +299,10 @@ All runs repeated under the warm-up rule, following the analysis plan fixed befo
 |---|---|
 | Can explainers find a known effect? | Yes, at x2 and x4. Saliency matches or slightly exceeds the t-test reference at x2 (AUPRC MLP 0.80, GCN 0.81; reference 0.78). The input mask is weakest. x1 is too weak for anything |
 | Does a scanner shortcut pull explanations away? | Yes. From 50% to 90% linkage, the scanner share rises to 0.46 (MLP) and 0.22 (GCN), and disease AUPRC drops by about 0.3. Test accuracy drops only 0.04–0.06, so accuracy does not reveal it |
-| Does SiteSwap beat ComBat? | Against our simplified ComBat (no empirical Bayes) yes, but that ComBat was too weak; see Step 12 for the standard ComBat answer |
-| Does SiteSwap beat doing nothing? | Disease AUPRC +0.15 and lower scanner share for both models, at the same accuracy |
-| Weak points | The MLP keeps 0.28 scanner share with SiteSwap (simplified ComBat 0.00; standard protected ComBat 0.16, Step 12); a perfect swap removes it, so the ComBat swap is the limit. With the ComBat-friendly decoy, SiteSwap still beats ComBat, but when the plain GCN already ignores the scanner, SiteSwap costs a little (-0.06) |
-| Real autism labels | No method changes how much explanations follow the hospital (standard ComBat included: MLP accuracy 0.603, GCN 0.587); SiteSwap keeps the plain accuracy. This is a sanity check only |
+| Does CF-Site beat ComBat? | Against our simplified ComBat (no empirical Bayes) yes, but that ComBat was too weak; see Step 12 for the standard ComBat answer |
+| Does CF-Site beat doing nothing? | Disease AUPRC +0.15 and lower scanner share for both models, at the same accuracy |
+| Weak points | The MLP keeps 0.28 scanner share with CF-Site (simplified ComBat 0.00; standard protected ComBat 0.16, Step 12); a perfect swap removes it, so the ComBat swap is the limit. With the ComBat-friendly decoy, CF-Site still beats ComBat, but when the plain GCN already ignores the scanner, CF-Site costs a little (-0.06) |
+| Real autism labels | No method changes how much explanations follow the hospital (standard ComBat included: MLP accuracy 0.603, GCN 0.587); CF-Site keeps the plain accuracy. This is a sanity check only |
 | Penalty variant | Hurts the GCN (0.20 vs 0.73). Ablation only |
 
 ## Step 12: Second region set and standard ComBat (31 Oct 2026)
@@ -310,19 +310,19 @@ All runs repeated under the warm-up rule, following the analysis plan fixed befo
 Two reviewer checks, both written in `CXB/docs/decisions.md` before running.
 
 - **Second region set (set B):** 10 different disease regions and 10 different decoy regions, same strengths; 3 splits × 3 seeds.
-- **Standard ComBat:** our ComBat had left out empirical-Bayes (EB) shrinkage. A one-split check showed EB changes the harmonised data by about half of ComBat's correction and makes label-protected ComBat much stronger (GCN AUPRC 0.11 → 0.72). So every methods experiment was rerun with standard ComBat (with and without label protection) and with SiteSwap built from it. Rule: compare SiteSwap with the best of the four ComBat variants.
+- **Standard ComBat:** our ComBat had left out empirical-Bayes (EB) shrinkage. A one-split check showed EB changes the harmonised data by about half of ComBat's correction and makes label-protected ComBat much stronger (GCN AUPRC 0.11 → 0.72). So every methods experiment was rerun with standard ComBat (with and without label protection) and with CF-Site built from it. Rule: compare CF-Site with the best of the four ComBat variants.
 
 | Question | Answer |
 |---|---|
 | Best ComBat | Standard (EB), label protected, in every experiment |
-| SiteSwap vs it, main setting (6 splits × 3 seeds) | GCN: disease AUPRC +0.10 (CI +0.03 to +0.16, 5/6 splits, p = 0.22), accuracy +0.03 on 6/6. MLP: tie (−0.00); SiteSwap keeps more scanner share (0.28 vs 0.16) but has +0.03 accuracy |
+| CF-Site vs it, main setting (6 splits × 3 seeds) | GCN: disease AUPRC +0.10 (CI +0.03 to +0.16, 5/6 splits, p = 0.22), accuracy +0.03 on 6/6. MLP: tie (−0.00); CF-Site keeps more scanner share (0.28 vs 0.16) but has +0.03 accuracy |
 | Integrated Gradients | GCN +0.14, MLP +0.01, both 6/6 splits |
 | ComBat-friendly decoy | MLP +0.02, GCN +0.09 (3/3 splits each) |
-| Region set B | Ties with standard ComBat. MLP still uses the shortcut, and SiteSwap beats plain by +0.13. The plain GCN ignores the shortcut there (scanner share 0.01), and SiteSwap costs it −0.03 AUPRC |
-| SiteSwap with the EB swap | GCN +0.14 (6/6, p = 0.031), MLP −0.02 |
+| Region set B | Ties with standard ComBat. MLP still uses the shortcut, and CF-Site beats plain by +0.13. The plain GCN ignores the shortcut there (scanner share 0.01), and CF-Site costs it −0.03 AUPRC |
+| CF-Site with the EB swap | GCN +0.14 (6/6, p = 0.031), MLP −0.02 |
 | ComBat variant | Changes everything: GCN AUPRC 0.02 (no EB, unprotected) to 0.63 (EB, protected). Standard unprotected ComBat leaves the MLP on the scanner (0.49) |
 
-**What this means for the paper:** the earlier "SiteSwap beats ComBat by +0.20 / +0.49" is withdrawn. The honest claim: SiteSwap is at least as good as the best standard ComBat, and better for the GCN in the main setting, while only adding training copies (the test data is not changed). The main contribution is the benchmark: it shows the shortcut, the drift that accuracy hides, and how much the choice of harmonisation changes what explanations find.
+**What this means for the paper:** the earlier "CF-Site beats ComBat by +0.20 / +0.49" is withdrawn. The honest claim: CF-Site is at least as good as the best standard ComBat, and better for the GCN in the main setting, while only adding training copies (the test data is not changed). The main contribution is the benchmark: it shows the shortcut, the drift that accuracy hides, and how much the choice of harmonisation changes what explanations find.
 
 ## Step 13: Overnight reviewer fixes and published models (1 Nov 2026)
 
@@ -344,12 +344,13 @@ A planned set of extra runs (12 splits, a GAT, the CC200 atlas) was stopped unfi
 
 | Item | Result |
 |---|---|
-| Holm correction on the main family | SiteSwap − plain: gain for both models (p ≤ 0.001). SiteSwap − best ComBat: tie for both (GCN p = 0.07) |
-| Why SiteSwap ties ComBat | Both use ComBat's estimate of the scanner effect (one fixed shift per connection); the perfect swap (0.85 / 0.90) shows the limit is the scanner model, not the method |
-| SiteSwap variants (check B) | Both swap versions close: MLP 0.57-0.59, GCN 0.73-0.77; the four ComBat versions spread 0.19-0.59 and 0.02-0.63 |
+| Holm correction on the main family | CF-Site − plain: gain for both models (p ≤ 0.001). CF-Site − best ComBat: tie for both (GCN p = 0.07) |
+| Why CF-Site ties ComBat | Both use ComBat's estimate of the scanner effect (one fixed shift per connection); the perfect swap (0.85 / 0.90) shows the limit is the scanner model, not the method |
+| CF-Site variants (check B) | Both swap versions close: MLP 0.57-0.59, GCN 0.73-0.77; the four ComBat versions spread 0.19-0.59 and 0.02-0.63 |
 | Real hospital signal (script 15) | Hospital balanced accuracy 0.70 (chance 0.05), autism 0.64 (chance 0.50); CC200 0.71 / 0.66 |
 | Scanner map without ground truth (script 16) | Top 45 scanner-difference connections from training data: 93-100% touch the scanner regions, at most 5% are disease connections; the label-adjusted map fails at 90% (scanner and label almost collinear) |
-| New contributions | (1) benchmark; (2) accuracy hides the shortcut; (3) the check works on real data; (4) fixes: the ComBat version decides, SiteSwap is a safe fix, the limit is the scanner model. Outline: `CXB/docs/paper-outline.md` |
+| New contributions | (1) benchmark; (2) accuracy hides the shortcut; (3) the check works on real data; (4) fixes: the ComBat version decides, CF-Site is a safe fix, the limit is the scanner model. Outline: `CXB/docs/paper-outline.md` |
+| Method name | SiteSwap renamed **counterfactual site training (CF-Site)**; perfect swap = **oracle CF-Site**. Code keeps `siteswap`, so no rerun. Closest prior work added: training on site counterfactuals (Vigneshwaran et al., MIDL 2023; Wang et al., MICCAI 2021); the difference is that we judge explanations against a planted ground truth |
 
 ## What comes next
 
@@ -358,21 +359,21 @@ A planned set of extra runs (12 splits, a GAT, the CC200 atlas) was stopped unfi
    - **If it passes**, the benchmark idea works.
    - **If it fails**, either the models can't learn the effect, or the explainers can't find it. We check which before moving to a fallback.
 2. **Gate 2 (done, passed): does a fake scanner shortcut pull explanations away from the disease?** (details below)
-3. **Gate 3 (done; confirmation passed): does SiteSwap keep explanations on the disease better than ComBat harmonisation?**
+3. **Gate 3 (done; confirmation passed): does CF-Site keep explanations on the disease better than ComBat harmonisation?**
 4. **Paper runs (done):** benchmark table, drift curve, real labels, ComBat check (Step 9).
 5. **Fixes and final runs (done):** warm-up rule, 3 seeds × 6 splits, ComBat-friendly decoy, split-level statistics (Steps 10–11), second region set and standard ComBat (Step 12).
-6. **Literature rebuilt (1 Nov 2026):** `Literature/literature-list.md` now has every reference checked on OpenAlex, grouped by role (problem, planting, explainers, models, shortcuts, ComBat, SiteSwap's neighbours, data), with a three-tier reading order.
+6. **Literature rebuilt (1 Nov 2026):** `Literature/literature-list.md` now has every reference checked on OpenAlex, grouped by role (problem, planting, explainers, models, shortcuts, ComBat, CF-Site's neighbours, data), with a three-tier reading order.
 7. **Published brain models (done, Step 13):** BrainNetCNN passes and was run; BrainGNN and BNT fail the sanity test.
 8. **Final framing (done, Step 14):** no new experiments needed.
 9. **Next: write the paper** (8-page conference format) from `CXB/docs/paper-outline.md`, `CXB/docs/stats.md` and the figures.
 
 # Simplified plan (decided 30 Oct 2026; framing superseded by Step 14)
 
-**The paper in one sentence:** using brain scans with a planted, known answer, we show that GNN explanations follow scanner shortcuts, and that a simple training trick (SiteSwap) keeps them on the real signal.
+**The paper in one sentence:** using brain scans with a planted, known answer, we show that GNN explanations follow scanner shortcuts, and that a simple training trick (CF-Site) keeps them on the real signal.
 
 **Contributions:**
 1. A test with a known answer, including a fake scanner shortcut.
-2. A simple new method (SiteSwap), plus its evaluation.
+2. A simple new method (CF-Site), plus its evaluation.
 
 | Part | Choice |
 |---|---|
@@ -400,17 +401,17 @@ A planned set of extra runs (12 splits, a GAT, the CC200 atlas) was stopped unfi
   - **Accuracy drop.**
 - **Headline figure:** as the shortcut strengthens (50 → 70 → 90%), explanations drift from disease to scanner.
 
-## SiteSwap and its competitor
+## CF-Site and its competitor
 
 - **ComBat harmonisation (competitor):** removes scanner differences before training. When scanner and label are mixed (e.g. 80/20), it faces a dilemma:
   - If it protects the label, it keeps the shortcut.
   - If it doesn't, it erases part of the disease.
-- **SiteSwap (ours):** during training, make a site-swapped copy of each scan with ComBat, and penalise the model if its explanation (saliency) changes between the two. Nothing is removed from the data.
+- **CF-Site (ours):** during training, make a site-swapped copy of each scan with ComBat, and penalise the model if its explanation (saliency) changes between the two. Nothing is removed from the data.
 - **Simplest fallback version:** train on both the original and the swapped copy with the same label (augmentation only, no explanation penalty).
 
 ## Gates
 
 1. **Gate 1:** models plus explainers find the × 4 planted effect (AUPRC ≥ 0.5).
 2. **Gate 2:** with the decoy present, explanations shift towards it.
-3. **Gate 3:** SiteSwap reduces that shift more than ComBat does, without losing accuracy.
-   - If not: simplify SiteSwap, rather than add parts.
+3. **Gate 3:** CF-Site reduces that shift more than ComBat does, without losing accuracy.
+   - If not: simplify CF-Site, rather than add parts.
