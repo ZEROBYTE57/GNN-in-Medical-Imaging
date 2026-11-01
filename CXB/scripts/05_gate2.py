@@ -43,16 +43,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--splits", type=int, default=3)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--seeds", default=None, help="comma list; overrides --seed (drift curve)")
+    ap.add_argument("--conditions", default=None,
+                    help="e.g. train:0.5,train:0.6,... (default: gate-2 conditions)")
     ap.add_argument("--level", default="x2")
     ap.add_argument("--m", type=int, default=10)
     ap.add_argument("--epochs", type=int, default=150)
     ap.add_argument("--models", default="mlp,gcn")
     ap.add_argument("--out", default="results/gate2")
+    ap.add_argument("--atlas", default=None, help="atlas name (default: main_atlas in configs/data.yaml), e.g. rois_cc200")
     args = ap.parse_args()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    seeds = [int(x) for x in args.seeds.split(",")] if args.seeds else [args.seed]
+    conditions = ([(c.split(":")[0], float(c.split(":")[1])) for c in args.conditions.split(",")]
+                  if args.conditions else CONDITIONS)
 
     cfg = yaml.safe_load((ROOT / "configs" / "data.yaml").read_text())
-    atlas = cfg["abide"]["main_atlas"]
+    atlas = args.atlas or cfg["abide"]["main_atlas"]
     raw = ROOT / cfg["paths"]["raw"] / cfg["abide"]["pipeline"] / cfg["abide"]["strategy"] / atlas
     d = np.load(ROOT / "data" / "processed" / f"abide_{atlas}.npz", allow_pickle=True)
     fc_all, dx, site, dead, fid = d["fc"], d["dx"], d["site"], d["n_dead_rois"], d["file_id"]
@@ -79,7 +86,8 @@ def main():
         fc_a = torch.tensor(p.fc, dtype=torch.float32, device=dev)
         fc_b = torch.tensor(dec.fc_b, dtype=torch.float32, device=dev)
         y_t = torch.tensor(p.y, dtype=torch.long, device=dev)
-        for design, frac in CONDITIONS:
+        wide = dec.inside | dec.incident
+        for (design, frac), seed in [(c, sd) for c in conditions for sd in seeds]:
             for fold in range(len(BRAINOOD_FOLDS)):
                 tr, va, te = site_fold(p.site, fold)
                 rng = np.random.default_rng([split, fold, int(frac * 100), design == "both"])
@@ -89,34 +97,37 @@ def main():
                 bt = torch.tensor(b, device=dev)[:, None, None]
                 fc = torch.where(bt, fc_b, fc_a)
                 for name in args.models.split(","):
-                    torch.manual_seed(args.seed)
+                    torch.manual_seed(seed)
                     model = MODELS[name](R, fc[tr].mean(0).cpu().numpy(), fc[tr].std(0).cpu().numpy()).to(dev)
                     model, best_epoch, _ = train_model(model, fc[tr], y_t[tr], fc[va], y_t[va],
-                                                       epochs=args.epochs, seed=args.seed)
+                                                       epochs=args.epochs, seed=seed)
                     with torch.no_grad():
                         acc = float((model(fc[te]).argmax(1) == y_t[te]).float().mean())
                     for ex_name, explain in EXPLAINERS.items():
                         s = edge_scores(explain(model, fc[te])).detach().cpu().numpy().mean(0)
-                        rows.append({"split": split, "fold": fold, "design": design, "frac": frac,
+                        rows.append({"split": split, "seed": seed, "fold": fold, "design": design, "frac": frac,
                                      "model": name, "explainer": ex_name, "best_epoch": best_epoch,
                                      "n_test": len(te), "test_acc": acc,
                                      "disease_auprc": auprc(s, p.inside, p.incident),
                                      "scanner_share": top_share(s, dec.inside, k),
+                                     "scanner_share_wide": top_share(s, wide, k),
                                      "disease_share": top_share(s, p.inside, k)})
             sub = pd.DataFrame([r for r in rows if r["split"] == split and r["design"] == design
-                                and r["frac"] == frac and r["explainer"] == "saliency"])
-            print("  " + design + f" {frac:.1f} | " + " | ".join(
+                                and r["frac"] == frac and r["seed"] == seed and r["explainer"] == "saliency"])
+            print("  " + design + f" {frac:.1f} seed {seed} | " + " | ".join(
                 f"{m}: acc {g.test_acc.mean():.2f} disease AUPRC {g.disease_auprc.mean():.2f} "
                 f"scanner share {g.scanner_share.mean():.2f}" for m, g in sub.groupby("model")), flush=True)
 
     df = pd.DataFrame(rows)
-    tag = f"{args.level}_m{args.m}_seed{args.seed}"
+    tag = f"{args.level}_m{args.m}_seed{args.seed}" if not args.seeds else f"{args.level}_m{args.m}_seeds{args.seeds.replace(',', '')}_drift"
     df.to_csv(out_dir / f"gate2_{tag}.csv", index=False)
     summ = (df.groupby(["design", "frac", "model", "explainer"])
-              [["test_acc", "disease_auprc", "scanner_share", "disease_share"]].mean().round(3))
+              [["test_acc", "disease_auprc", "scanner_share", "scanner_share_wide", "disease_share"]].mean().round(3))
     print("\n", summ.to_string())
     sal = df[df.explainer == "saliency"].groupby(["design", "frac", "model"])[["scanner_share", "disease_auprc"]].mean()
     checks = {}
+    if ("train", 0.5) not in conditions or ("train", 0.9) not in conditions:
+        return
     for m in df.model.unique():
         ref, s90 = sal.loc[("train", 0.5, m)], sal.loc[("train", 0.9, m)]
         checks[m] = {"scanner_share_rise": round(float(s90.scanner_share - ref.scanner_share), 3),

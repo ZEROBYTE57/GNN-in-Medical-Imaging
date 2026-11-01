@@ -51,6 +51,35 @@ def test_siteswap_training_runs_and_learns():
     fc[y == 1, 1, 0] += 1.0
     t = torch.tensor(fc, dtype=torch.float32)
     yt = torch.tensor(y)
+    torch.manual_seed(0)                      # fixed init: the result must not depend on test order
     model = MLP(R, fc.mean(0), fc.std(0), dropout=0.1)
     model, _, curve = train_siteswap(model, t[:120], t[:120], yt[:120], t[120:], yt[120:], lam=1.0, epochs=20)
     assert (model(t[120:]).argmax(1) == yt[120:]).float().mean() > 0.9
+
+
+def test_add_site_harmonises_unseen_site():
+    rng = np.random.default_rng(1)
+    x = rng.normal(0, 1, (300, 4))
+    b = np.repeat([0, 1, 2], 100)
+    x[b == 1] += 1.0
+    x[b == 2] = x[b == 2] * 2 - 1.5           # unseen site: shifted and scaled
+    f = combat.fit(x[b < 2], b[b < 2])
+    f2, sid = combat.add_site(f, x[b == 2])
+    h = combat.harmonise(f2, x[b == 2], np.full(100, sid))
+    ref = combat.harmonise(f, x[b < 2], b[b < 2])
+    assert abs(h.mean() - ref.mean()) < 0.1 and abs(h.std() - ref.std()) < 0.15
+
+
+def test_empirical_bayes_combat_shrinks_site_effects_towards_their_mean():
+    rng = np.random.default_rng(1)
+    n, f = 300, 50
+    batch = np.repeat([0, 1], n // 2)
+    x = rng.standard_normal((n, f)) + 0.8 * batch[:, None] * rng.random(f)
+    a, b = combat.fit(x, batch), combat.fit(x, batch, eb=True)
+    for s_ in (0, 1):
+        dev_a = np.abs(a.gamma[s_] - a.gamma[s_].mean())
+        dev_b = np.abs(b.gamma[s_] - a.gamma[s_].mean())
+        assert (dev_b <= dev_a + 1e-9).all()
+    hb = combat.harmonise(b, x, batch)
+    raw_gap = np.abs(x[batch == 1].mean(0) - x[batch == 0].mean(0)).mean()
+    assert np.abs(hb[batch == 1].mean(0) - hb[batch == 0].mean(0)).mean() < 0.3 * raw_gap

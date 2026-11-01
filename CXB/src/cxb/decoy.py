@@ -40,11 +40,12 @@ def site_effect_eta2(fc, site, idx, min_n=20):
     return eta, sites, means
 
 
-def select_decoy_regions(eta, exclude, m):
-    """The m regions (not in `exclude`) with the largest mean eta squared over their edges."""
+def select_decoy_regions(eta, exclude, m, skip=0):
+    """The m regions (not in `exclude`) with the largest mean eta squared over their edges,
+    after skipping the top `skip` of them (skip=m gives a second, non-overlapping set)."""
     score = eta.sum(1) / (eta.shape[0] - 1)
-    score[np.asarray(exclude)] = -np.inf
-    return np.argsort(-score, kind="stable")[:m]
+    score[np.asarray(exclude, dtype=int)] = -np.inf
+    return np.argsort(-score, kind="stable")[skip:skip + m]
 
 
 def typical_site_difference(means, inside):
@@ -76,22 +77,36 @@ class Decoy:
 
 
 def build_decoy(p, load_ts, fc_all, dx_all, site_all, m=10, seed=0, control_label=2,
-                min_site_n=20, pipeline_kwargs=None):
-    """Scanner-B version of every subject in planted dataset `p` (built with keep_ts=True)."""
+                min_site_n=20, pipeline_kwargs=None, mode="timeseries", exclude=(), skip=0, target=None):
+    """Scanner-B version of every subject in planted dataset `p` (built with keep_ts=True).
+
+    mode="timeseries" (main): a shared signal added to the decoy regions' time series, so the
+    effect on connectivity differs from person to person, as real scanner effects do.
+    mode="edge" (robustness check): the same average shift added directly to each decoy
+    connection, identical for everyone; this is exactly what ComBat assumes.
+    exclude / skip: extra regions to leave out and number of top decoy regions to skip
+    (second region set: exclude the first disease set, skip the first decoy set);
+    target overrides the shift size (to match the first set)."""
     ctrl = np.where(np.asarray(dx_all) == control_label)[0]
     eta, sites, means = site_effect_eta2(fc_all, site_all, ctrl, min_site_n)
-    regions = select_decoy_regions(eta, p.regions, m)
+    regions = select_decoy_regions(eta, np.concatenate([p.regions, np.asarray(exclude, dtype=int)]), m, skip)
     inside, incident = region_masks(eta.shape[0], regions)
-    target = typical_site_difference(means, inside)
+    if target is None:
+        target = typical_site_difference(means, inside)
     r0 = float(np.tanh(p.fc[:, inside].mean()))
     amplitude = calibrate_amplitude(r0, target)
+    if mode == "edge":
+        fc_b = p.fc + target * inside[None]
+        meta = {"m": m, "mode": mode, "target_shift": target, "sites_used": sites,
+                "mean_eta2_inside": float(eta[inside].mean()), "achieved_shift": float(target)}
+        return Decoy(fc_b, regions, inside, incident, meta)
     rng = np.random.default_rng([seed, 7])
     fc_b = np.empty_like(p.fc)
     for row, i in enumerate(p.pool_idx):
         X = p.ts[row] if row in p.ts else load_ts(i)
         Z, _ = plant_timeseries(X, regions, amplitude, rng)
         fc_b[row], _ = connectivity(Z, **(pipeline_kwargs or {}))
-    meta = {"m": m, "target_shift": target, "amplitude": amplitude, "sites_used": sites,
+    meta = {"m": m, "mode": mode, "target_shift": target, "amplitude": amplitude, "sites_used": sites,
             "mean_eta2_inside": float(eta[inside].mean()),
             "achieved_shift": float((fc_b - p.fc)[:, inside].mean())}
     return Decoy(fc_b, regions, inside, incident, meta)

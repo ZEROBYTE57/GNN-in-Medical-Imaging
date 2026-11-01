@@ -26,9 +26,11 @@ def _saliency_graph(model, x):
 
 
 def train_siteswap(model, fc_tr, fc_tr_swap, y_tr, fc_va, y_va, lam=1.0, epochs=150, lr=1e-3,
-                   weight_decay=1e-3, batch_size=32, seed=0):
-    """Returns (model with best weights, best epoch, validation-loss curve)."""
+                   weight_decay=1e-3, batch_size=32, seed=0, min_epochs=30):
+    """Returns (model with best weights, best epoch, validation-loss curve). Same warm-up
+    rule as train_model: the epoch is chosen from epoch `min_epochs` on."""
     g = torch.Generator().manual_seed(seed)
+    lr = getattr(model, "train_lr", lr)            # tuning variants set their own rate
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     best, best_epoch, best_state, curve = float("inf"), 0, None, []
     n = len(fc_tr)
@@ -37,7 +39,8 @@ def train_siteswap(model, fc_tr, fc_tr_swap, y_tr, fc_va, y_va, lam=1.0, epochs=
         for idx in torch.randperm(n, generator=g).split(batch_size):
             idx = idx.to(fc_tr.device)
             x, xs, y = fc_tr[idx], fc_tr_swap[idx], y_tr[idx]
-            loss = F.cross_entropy(model(x), y) + F.cross_entropy(model(xs), y)
+            loss = F.cross_entropy(model(x), y) + getattr(model, "aux", 0.0)
+            loss = loss + F.cross_entropy(model(xs), y) + getattr(model, "aux", 0.0)  # aux = extra loss of some models (BrainGNN)
             if lam > 0:
                 # Saliency maps compared without dropout, so the penalty measures the site
                 # swap, not random dropout noise.
@@ -53,7 +56,7 @@ def train_siteswap(model, fc_tr, fc_tr_swap, y_tr, fc_va, y_va, lam=1.0, epochs=
         with torch.no_grad():
             vl = F.cross_entropy(model(fc_va), y_va).item()
         curve.append(vl)
-        if vl < best:
+        if epoch >= min(min_epochs, epochs) and vl < best:
             best, best_epoch, best_state = vl, epoch, copy.deepcopy(model.state_dict())
     model.load_state_dict(best_state)
     model.eval()

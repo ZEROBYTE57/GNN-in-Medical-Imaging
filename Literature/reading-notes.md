@@ -1,6 +1,6 @@
 # Literature verification notes
 
-Last updated 28 Oct 2026. Full list of papers to cite: [literature-list.md](literature-list.md).
+Last updated 1 Nov 2026. Full list of papers to cite, with the reading order: [literature-list.md](literature-list.md).
 Verdict = what the paper means for our novelty claims:
 C1 = planted-ground-truth benchmark, C2 = ground-truth test of shortcut-robust brain GNNs, C3 = GNN vs simple-model explanations, C4 = SiteSwap.
 
@@ -9,6 +9,7 @@ C1 = planted-ground-truth benchmark, C2 = ground-truth test of shortcut-robust b
 - **Novelty:** holds after full-text checks of 11 papers and a 2026 search (14 new peer-reviewed papers, abstracts only). No paper plants known effects into real connectomes to test GNN explanations.
 - **Claim wording:** "first to test GNN explanations with planted effects in real connectomes", never "first to plant effects in real data" (Beer 2020 and Reynolds 2023 did that for harmonisation).
 - **Preprints in this folder** (EGS, XIGL): read for awareness only; do not cite in the literature review unless a peer-reviewed version appears.
+- **1 Nov 2026 update:** list rebuilt for the final scope. Added and checked on OpenAlex: the planting and explanation-evaluation precedents closest to CXB (Adebayo et al. ICLR 2022, Zhou et al. AAAI 2022, CLEVR-XAI, Sanity checks), the saliency and GCN papers, BrainNetCNN, shortcut papers (Zech 2018, Brown 2023), ComBat pitfalls (Nygaard 2016, Wachinger 2021, Dinsdale 2021) and SiteSwap's closest general methods (Gao et al. ICML 2023 targeted augmentations, Kaushik 2020, Ilse 2021). None plants effects into real connectomes, so the novelty claim stands. **Gao et al. 2023 is now the closest method to SiteSwap** and must be named in the related work: SiteSwap is targeted augmentation with ComBat's site model, applied to connectomes and judged by explanations.
 
 ## Batch 1: full text checked
 
@@ -48,26 +49,25 @@ From the 28 Oct 2026 search (Consensus, 2026 only, preprints excluded). Full det
 | H4 | Wang et al., JNEL-GCN for ADHD | IEEE TMI 2026 | Claims 97% on ADHD-200 and ABIDE-I (vs about 61% in H1); biomarkers checked against literature | Medium: cite neutrally |
 | H5, H7–H10 | Xia (MedIA), Ji (TBME), Ji (ISBI), Lan (ISBI), He DPGR-Net (Neural Networks) | 2026 | Interpretable or site-robust brain GNNs; related work | Low |
 
-## Design consequences (running list)
+## Design consequences (final, 1 Nov 2026)
 
-1. **Atlas:** CI-GNN and BrainIB use AAL (116 ROIs); Lee 2026 and BrainOOD use CC200-type parcellations. Proposal: AAL main, CC200 sensitivity (both in ABIDE Preprocessed). **Decision pending before week 1.**
-2. **Effect sizes:** strong, moderate and weak planted effects estimated from real ABIDE ASD vs control edge differences (Beer 2020 approach).
-3. **Site decoys:** report decoy strength per atlas (Yu 2018: site effects vary by atlas and metric). Mention SLACC (H11) as an alternative generator and why ComBat was chosen.
-4. **New control (from H14):** retrain every model on shuffled labels and run the same explainers; explanation agreement above this baseline is what counts.
-5. **Reporting (from H13):** 5 seeds, paired significance tests, tuned MLP / logistic regression / random forest baselines, leakage-free splits; state compliance in the paper.
-6. **Metrics:** primary stays AUPRC of planted-edge recovery; consider OAR (H12) as a secondary metric if its code is available.
-7. **Expected accuracy:** about 60–65% on real ABIDE is normal (H1, BrainOOD). Do not chase higher numbers; the benchmark measures explanations.
+1. **Atlas:** AAL for all experiments. CC200 is used only to replicate the real hospital-signal check (0.71 vs 0.66); one atlas for the benchmark is stated as scope.
+2. **Effect sizes:** done as planned (Beer 2020 approach): x1, x2, x4 the real ABIDE autism effect.
+3. **Site decoys:** sized from real ABIDE site differences; two versions (person-specific and ComBat's own model). SLACC (H11) supports a localised decoy.
+4. **Shuffled-label control (from H14): done.** Explainers score at chance with shuffled labels (AUPRC 0.010-0.011; chance 0.008).
+5. **Reporting (from H13):** 6 splits x 3 seeds (methods) and 3 x 3 (elsewhere); split-level bootstrap CI, sign test and paired t-test, Holm-corrected for the main family. Logistic regression baseline (C tuned on validation): **done** (0.98 without shortcut; drifts like the others).
+6. **Metrics:** disease AUPRC (primary), scanner share, accuracy. OAR (H12) not used.
+7. **Expected accuracy:** real ABIDE leave-site-out accuracy about 0.60–0.65 (ours: MLP 0.632, GCN 0.597), in line with H1 and BrainOOD.
+8. **Models (1 Nov):** reimplemented from their papers: BrainNetCNN (B8) passes the sanity test and is used; BrainGNN (B1) and Brain Network Transformer (B3) fail it at about 250 training subjects and are reported as a sample-size caution. ContrastPool (B5) not used.
 
-## Still to obtain
+## Still to obtain (Tier 1 of the reading order first)
 
 | Priority | Paper | Why needed |
 |---|---|---|
-| 1 | Yu et al. 2018, full PDF (Methods) | Recipe for the site-swap generator |
-| 1 | H14 Jeon 2026 (open access) | Shuffled-label control design |
-| 1 | H1 Lee 2026 | ABIDE GNN accuracy reference, CC200 + ComBat pipeline |
-| 1 | H13 Kurashkin 2026 (open access) | Reporting checklist |
-| 2 | H2 BrainIB++, H12 OAR (IEEE via Amrita), H11 SLACC | Baseline, metric, generator alternative |
-| 2 | Sui et al., CAL (KDD 2022) / CAL+ (TKDD 2024) | Baseline; check code |
-| 2 | B1 BrainGNN, B3 Brain Network Transformer, B4 IBGNN, C4 MetaExplainer, C6 CIA-GCL | Baselines; check whether code runs on AAL/CC200 |
-| 3 | D1–D8 explainers and evaluation papers | Methods section |
-| 3 | G1–G9 dataset, atlas and tool papers | Required citations |
+| 1 | D11 Adebayo 2022, D12 Zhou 2022, D5 GraphXAI | Closest prior work to the benchmark; related-work section |
+| 1 | B1 BrainGNN, B8 BrainNetCNN, B3 BNT | Needed to reimplement the models |
+| 1 | E6 Gao 2023 | Closest method to SiteSwap |
+| 1 | F1 Johnson 2007, F3 Yu 2018 (Methods), F9 Nygaard 2016 | ComBat and its pitfalls |
+| 1 | D9 Simonyan, D3 IG, D1 GNNExplainer, D7 Faber | Explainers and the main objection |
+| 2 | A4, A9, A10, A7, F10, F11, E5, E7, D10, D13, D8, H1, H13, H14 | Supporting citations |
+| 3 | G1, G2, G5, G9, G10, B9 and the rest of Tier 3 | Cite only |

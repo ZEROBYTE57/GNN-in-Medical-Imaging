@@ -1,148 +1,175 @@
-# Literature list: peer-reviewed only
+# Literature list for the CXB paper
 
-Built 28 Oct 2026 for the paper "Do brain GNN explanations find the disease or the scanner?".
-Preprints (arXiv only, no peer-reviewed version) are excluded and listed at the end, for awareness only.
+Paper: "Do brain GNN explanations find the disease or the scanner?" (CXB benchmark + SiteSwap).
+First built 28 Oct 2026; rebuilt 1 Nov 2026 for the final scope (planting, explainers, published brain models, site effects).
 
-## How to read the access column
+**Rules**
+- Peer-reviewed only, except the preprint list at the end (awareness only, or cited clearly as a preprint).
+- Every entry with a DOI was checked on OpenAlex on 1 Nov 2026 (first author, venue, year, volume, first page, DOI); "ff" = last page not yet checked, take it from the publisher page when writing the bibliography. Entries without a DOI are carried over from the 28 Oct check. "Cites" = OpenAlex citation count on that date (a rough guide to standing, not quality).
+- If you read an arXiv or author copy, cite the **published** version given here.
+- IDs from the 28 Oct list are kept, so older notes still match; new papers have new IDs.
+- **Reading order is at the end.**
 
-| Code | Meaning |
-|---|---|
-| **OA** | Open access at the publisher: free to read and download |
-| **Free proc.** | Free conference proceedings (NeurIPS, ICML/PMLR, ICLR/OpenReview, TMLR) |
-| **IEEE (Amrita)** | IEEE Xplore; Amrita has access (confirmed: your BrainIB PDF came from it) |
-| **Author copy** | Paywalled at the publisher, but the authors' accepted version is free on arXiv, PMC or bioRxiv |
-| **Check** | Paywalled; try the Amrita library, then the authors' websites, then ask the authors by email |
+Access: **OA** = free at the publisher · **Proc.** = free conference proceedings · **IEEE/Amrita** = via the Amrita library · **Author copy** = free accepted version on arXiv/PMC/bioRxiv · **Check** = try the library first.
 
-**Citing:** every paper below is peer-reviewed and citable. If you read an author copy, cite the **published** version (journal, volume, pages, DOI), never the arXiv version.
-**Status:** "Have" = already in this folder.
+## A. The problem: brain-GNN explanations are judged without a known answer
 
-## A. Problem and motivation
-
-| # | Paper | Venue | Use in your paper | Access | Status |
+| # | Reference | Cites | Use in the paper | Access | Status |
 |---|---|---|---|---|---|
-| A1 | Chan et al., Discovering robust biomarkers of psychiatric disorders from rs-fMRI via GNNs: a systematic review | NeuroImage 319, 2025 | Explanations judged by literature cross-referencing; no ground truth | OA | Have |
-| A2 | Han et al., Rethinking functional brain connectome analysis: do graph deep learning models help? | npj Artificial Intelligence, 2026 | Simple models beat GNNs on connectomes | OA | Have |
-| A3 | Mueller et al., Are population graphs really as powerful as believed? | TMLR, 2024 | GNNs vs simple baselines | Free proc. | Get |
-| A4 | Geirhos et al., Shortcut learning in deep neural networks | Nature Machine Intelligence 2, 2020 | Defines shortcut learning | Author copy | Get |
-| A5 | DeGrave et al., AI for radiographic COVID-19 detection selects shortcuts over signal | Nature Machine Intelligence 3, 2021 | Medical shortcut example | Author copy | Get |
-| A6 | Rosenblatt et al., Data leakage inflates prediction performance in connectome-based machine learning models | Nature Communications 15, 2024 | Leakage in connectome ML; supports your inductive protocol | OA | Get |
-| A7 | Abraham et al., Deriving reproducible biomarkers from multi-site resting-state data: an autism-based example | NeuroImage 147, 2017 | ABIDE site effects; leave-site-out | Author copy | Get |
-| A8 | Mienye & Viriri, Graph neural networks in medical imaging: methods, applications and future directions | Information 16, 2025 | One background citation for GNNs in imaging | OA | Have (Back Up/) |
+| A1 | Chan et al., Discovering robust biomarkers of psychiatric disorders from resting-state fMRI via graph neural networks: a systematic review. *NeuroImage* 319:121422, 2025. doi:10.1016/j.neuroimage.2025.121422 | 14 | **Key motivation:** 65 brain-GNN studies; explanations checked only against the literature | OA | Have |
+| C2 | Zheng, Yu & Chen, CI-GNN: a Granger causality-inspired graph neural network for interpretable brain network-based psychiatric diagnosis. *Neural Networks* 172:106147, 2024 | – | **Quote for the introduction:** real brain data has no ground-truth subgraph, so explanations were scored only on synthetic graphs | Author copy | Have |
+| A2 | Han et al., Rethinking functional brain connectome analysis: do graph deep learning models help? *npj Artificial Intelligence* 2, 2026. doi:10.1038/s44387-025-00067-x | 8 | Simple models match or beat GNNs on connectomes; supports keeping the MLP | OA | Have |
+| A3 | Mueller et al., Are population graphs really as powerful as believed? *TMLR*, 2024 | – | GNNs vs simple baselines | Proc. | Optional |
+| A8 | Mienye & Viriri, Graph neural networks in medical imaging: methods, applications and future directions. *Information* 16, 2025 | – | One background sentence on GNNs in imaging | OA | Have (Back Up/) |
 
-## B. Brain-network GNNs (background and baselines)
+## P. Planting a known answer into real data (the benchmark's method)
 
-| # | Paper | Venue | Use | Access | Code | Status |
-|---|---|---|---|---|---|---|
-| B1 | Li et al., BrainGNN: interpretable brain graph neural network for fMRI analysis | Medical Image Analysis 74, 2021 | **Baseline** (built-in node explanations) | Author copy (bioRxiv) | Yes | Get |
-| B2 | Cui et al., BrainGB: a benchmark for brain network analysis with GNNs | IEEE TMI 42, 2023 | Standard pipeline; accuracy-only benchmark | IEEE (Amrita) | Yes | Get |
-| B3 | Kan et al., Brain Network Transformer | NeurIPS 2022 | **Baseline** (graph transformer) | Free proc. | Yes | Get |
-| B4 | Cui et al., Interpretable GNNs for connectome-based brain disorder analysis (IBGNN) | MICCAI 2022 (arXiv v2 notes the MICCAI acceptance; cite the LNCS version) | **Baseline** (shared explanation mask) | Author copy | Yes | Get |
-| B5 | Xu et al., Contrastive graph pooling for explainable classification of brain networks (ContrastPool) | IEEE TMI 43, 2024 | Interpretable brain GNN, judged by literature | IEEE (Amrita) | Yes | Optional |
-| B6 | Zheng et al., BPI-GNN: interpretable brain network-based psychiatric diagnosis and subtyping | NeuroImage 293, 2024 | Prototype explanations; related work | OA | Yes | Optional |
-| B7 | Wei et al., A brain graph foundation model: pre-training and prompt-tuning across broad atlases and disorders (BrainGFM) | ICLR 2026 | Newest direction; one sentence | Free proc. | Yes | Optional |
-
-## C. Shortcut-robust brain GNNs (your contribution 2 tests these)
-
-| # | Paper | Venue | Use | Access | Code | Status |
-|---|---|---|---|---|---|---|
-| C1 | Zheng et al., BrainIB: interpretable brain network-based psychiatric diagnosis with graph information bottleneck | IEEE TNNLS 36(7), 2025 | **Main baseline** | IEEE (Amrita) | Yes | Have |
-| C2 | Zheng, Yu & Chen, CI-GNN: a Granger causality-inspired GNN for interpretable brain network-based psychiatric diagnosis | Neural Networks 172, 2024 | **Baseline**; quote: ground truth unavailable for real data | Author copy (arXiv) | Yes | Have |
-| C3 | Xu et al., BrainOOD: out-of-distribution generalizable brain network analysis | ICLR 2025 | **Baseline**; reuse its ABIDE site splits | Free proc. | Yes | Have |
-| C4 | Qiu et al., MetaExplainer: domain generalization of functional connectome analyses from the perspective of explainability | Medical Image Analysis 105, 2025 | **Baseline** if code runs | Check | Check | Get |
-| C5 | Qiu et al., Towards GNNs with domain-generalizable explainability for fMRI-based brain disorder diagnosis (XG-GNN) | MICCAI 2024 (LNCS, pp. 454–464) | Related; earlier version of C4 | Check | Check | Get |
-| C6 | Yu, Liu & Ji, Causal invariance-aware augmentation for brain graph contrastive learning (CIA-GCL) | ICML 2025 (PMLR 267:73221–73240) | Site-invariant brain subgraph; related | Free proc. | Check | Get |
-
-## D. GNN explainers and how they are evaluated
-
-| # | Paper | Venue | Use | Access | Status |
+| # | Reference | Cites | Use in the paper | Access | Status |
 |---|---|---|---|---|---|
-| D1 | Ying et al., GNNExplainer | NeurIPS 2019 | **Explainer** in the benchmark | Free proc. | Get |
-| D2 | Luo et al., Parameterized explainer for GNN (PGExplainer) | NeurIPS 2020 | **Explainer** | Free proc. | Get |
-| D3 | Sundararajan et al., Axiomatic attribution for deep networks (Integrated Gradients) | ICML 2017 (PMLR 70) | **Explainer** | Free proc. | Get |
-| D4 | Miao, Liu & Li, Interpretable and generalizable graph learning via stochastic attention (GSAT) | ICML 2022 (PMLR 162) | Basis of SiteSwap's edge mask | Free proc. | Get |
-| D5 | Agarwal et al., Evaluating explainability for graph neural networks (GraphXAI / ShapeGGen) | Scientific Data 10, 2023 | Closest benchmark (synthetic graphs only) | OA | Get |
-| D6 | Agarwal, Zitnik & Lakkaraju, Probing GNN explainers: a rigorous theoretical and empirical analysis | AISTATS 2022 (PMLR 151) | Faithfulness and stability metrics | Free proc. | Get |
-| D7 | Faber, Moghaddam & Wattenhofer, When comparing to ground truth is wrong: on evaluating GNN explanation methods | KDD 2021 | Pitfalls of ground-truth evaluation; answer it in your Discussion | Author copy | Get |
-| D8 | Yuan et al., Explainability in graph neural networks: a taxonomic survey | IEEE TPAMI 45, 2023 | Explainer taxonomy | IEEE (Amrita) | Get |
+| F5 | Beer et al., Longitudinal ComBat: a method for harmonizing longitudinal multi-scanner imaging data. *NeuroImage* 220:117129, 2020. doi:10.1016/j.neuroimage.2020.117129 | 323 | **Template:** fake patient/control split of real controls, effects sized from real disease data | OA | Have |
+| F6 | Reynolds et al., ComBat harmonization: empirical Bayes versus fully Bayes approaches. *NeuroImage: Clinical* 39:103472, 2023. doi:10.1016/j.nicl.2023.103472 | 37 | Precedent: planted disease effects in real ADNI features; also on EB ComBat | OA | Have |
+| D12 | Zhou, Booth, Ribeiro & Shah, Do feature attribution methods correctly attribute features? *AAAI* 36(9):9623ff, 2022. doi:10.1609/aaai.v36i9.21196 | 109 | **Closest idea outside the brain:** planting known features into real images to score attribution methods ("semi-natural" data) | OA | Get |
+| D11 | Adebayo, Muelly, Abelson & Kim, Post hoc explanations may be ineffective for detecting unknown spurious correlation. *ICLR*, 2022 | 28 | **Very close:** plants spurious signals and asks whether explanations reveal them. Our scanner decoy is the brain-connectome version | Proc. | Get |
+| D13 | Arras, Osman & Samek, CLEVR-XAI: a benchmark dataset for the ground truth evaluation of neural network explanations. *Information Fusion* 81:14ff, 2022. doi:10.1016/j.inffus.2021.11.008 | 183 | Ground-truth evaluation of explanations (synthetic images) | Author copy | Get |
+| D5 | Agarwal et al., Evaluating explainability for graph neural networks (GraphXAI / ShapeGGen). *Scientific Data* 10:144, 2023. doi:10.1038/s41597-023-01974-x | 186 | **Closest graph benchmark:** ground-truth GNN explanations on synthetic graphs only | OA | Get |
 
-## E. Invariant learning and shortcut-aware training (SiteSwap's competitors)
+## D. Explainers and how explanations are evaluated
 
-| # | Paper | Venue | Use | Access | Status |
+| # | Reference | Cites | Use in the paper | Access | Status |
 |---|---|---|---|---|---|
-| E1 | Wu et al., Discovering invariant rationales for GNNs (DIR) | ICLR 2022 | Invariant subgraph; related | Free proc. | Get |
-| E2 | Sui et al., Causal attention for interpretable and generalizable graph classification (CAL) | KDD 2022 | **Baseline**: shortcut-feature mixing | Author copy | Get |
-| E3 | Sui et al., Enhancing OOD generalization on graphs via causal attention learning (CAL+) | ACM TKDD 18, 2024 | Journal version of E2 | Check | Optional |
-| E4 | Liu et al., Rationalizing graph neural networks with data augmentation (RGDA) | ACM TKDD 18(4), 2024 | **Closest method to SiteSwap** | Check | Have |
+| D9 | Simonyan, Vedaldi & Zisserman, Deep inside convolutional networks: visualising image classification models and saliency maps. *ICLR Workshop*, 2014 | 5365 | **Explainer used:** saliency (gradients) | Proc. | Get |
+| D3 | Sundararajan, Taly & Yan, Axiomatic attribution for deep networks (Integrated Gradients). *ICML*, PMLR 70, 2017 | 3934 | **Explainer used** | Proc. | Get |
+| D1 | Ying et al., GNNExplainer: generating explanations for graph neural networks. *NeurIPS*, 2019 | 850 | **Explainer used** in simplified form ("GNNExplainer-style input mask"); name it that way | Proc. | Get |
+| D10 | Adebayo et al., Sanity checks for saliency maps. *NeurIPS* 31, 2018 | 1293 | Explanations can look plausible yet ignore the model; motivates ground-truth tests | Proc. | Get |
+| D7 | Faber, Moghaddam & Wattenhofer, When comparing to ground truth is wrong: on evaluating GNN explanation methods. *KDD*, pp. 332ff, 2021. doi:10.1145/3447548.3467283 | 41 | **Answer it in the Discussion:** a model may solve the task without the planted signal; our t-test reference, accuracy checks and shuffled-label control address this | Author copy | Get |
+| D8 | Yuan, Yu, Gui & Ji, Explainability in graph neural networks: a taxonomic survey. *IEEE TPAMI* 45, 2023. doi:10.1109/tpami.2022.3204236 | 594 | Explainer taxonomy for the related-work section | IEEE/Amrita | Get |
+| D6 | Agarwal, Zitnik & Lakkaraju, Probing GNN explainers: a rigorous theoretical and empirical analysis. *AISTATS*, PMLR 151, 2022 | – | Faithfulness and stability metrics | Proc. | Optional |
+| H14 | Jeon, Systematic validation of GNN explanations against adverse outcome pathway reactive centers. *Journal of Cheminformatics*, 2026 | – | Shuffled-label control: much ground-truth agreement came from explainer bias | OA | Get |
+| H12 | Fang et al., Out-of-distribution-resistant evaluations for explanations of GNNs (OAR/OAR+). *IEEE TPAMI*, 2026 | – | Alternative explanation metric | IEEE/Amrita | Optional |
 
-## F. Site effects, harmonisation and planting design
+## M. Models: GNNs and published brain-network models
 
-| # | Paper | Venue | Use | Access | Status |
+| # | Reference | Cites | Role in the paper | Access | Status |
 |---|---|---|---|---|---|
-| F1 | Johnson, Li & Rabinovic, Adjusting batch effects in microarray expression data using empirical Bayes methods (ComBat) | Biostatistics 8, 2007 | Original ComBat | Check (widely available) | Get |
-| F2 | Fortin et al., Harmonization of multi-site diffusion tensor imaging data | NeuroImage 161, 2017 | ComBat for neuroimaging | Author copy (PMC) | Get |
-| F3 | Yu et al., Statistical harmonization corrects site effects in functional connectivity measurements from multi-site fMRI data | Human Brain Mapping 39, 2018 | **Recipe for the site-swap generator** | Author copy (PMC) | Partial (need Methods) |
-| F4 | Chen et al., Mitigating site effects in covariance for machine learning in neuroimaging data (CovBat) | Human Brain Mapping 43, 2022 | Covariance-level variant of the generator | OA | Get |
-| F5 | Beer et al., Longitudinal ComBat | NeuroImage 220, 2020 | **Template for planting effects** into real data | OA | Have |
-| F6 | Reynolds et al., ComBat harmonization: empirical Bayes versus fully Bayes approaches | NeuroImage: Clinical 39, 2023 | Precedent: ComBat for synthetic data and planted effects | OA | Have |
-| F7 | Wang, Chen & Yan, Comprehensive evaluation of harmonization on functional brain imaging for multisite data-fusion | NeuroImage 274, 2023 | Harmonisation for fMRI; supports generator choices | OA | Optional |
-| F8 | Xin et al., ComBat-Predict enhances generalizability of neuroimaging models to new sites | Human Brain Mapping 47, 2025/26 | Applying ComBat to unseen sites (leave-site-out) | OA | Optional |
+| B9 | Kipf & Welling, Semi-supervised classification with graph convolutional networks. *ICLR*, 2017 | 23978 | **Used:** our GCN's layer | Proc. | Get |
+| B11 | Veličković, Cucurull, Casanova, Romero, Liò & Bengio, Graph attention networks. *ICLR*, 2018 | – | **Used:** our GAT layer (second GNN, BrainGB set-up) | Proc. | Get |
+| B2 | Cui et al., BrainGB: a benchmark for brain network analysis with graph neural networks. *IEEE TMI* 42:493ff, 2023. doi:10.1109/tmi.2022.3218745 | 218 | **Used:** our GCN follows its design (node features = connectivity rows, concatenation readout) | IEEE/Amrita | Get |
+| B1 | Li et al., BrainGNN: interpretable brain graph neural network for fMRI analysis. *Medical Image Analysis* 74:102233, 2021. doi:10.1016/j.media.2021.102233 | 831 | **Reimplemented** from the paper; fails our sanity test at about 250 training subjects (reported). Its own region scores are a built-in explanation to score | Author copy (bioRxiv) | Get |
+| B8 | Kawahara et al., BrainNetCNN: convolutional neural networks for brain networks; towards predicting neurodevelopment. *NeuroImage* 146:1038ff, 2017. doi:10.1016/j.neuroimage.2016.09.046 | 813 | **Used** (reimplemented from the paper); the classic connectome-specific model | Author copy | Get |
+| B3 | Kan, Dai, Cui, Zhang, Guo & Yang, Brain Network Transformer. *NeurIPS*, pp. 25586ff, 2022. doi:10.52202/068431-1855 | 160 | **Reimplemented;** fails our sanity test (reported). The standard transformer baseline; attention as a built-in explanation | Proc. | Get |
+| B5 | Xu et al., Contrastive graph pooling for explainable classification of brain networks (ContrastPool). *IEEE TMI* 43:3292ff, 2024. doi:10.1109/tmi.2024.3392988 | 55 | **Optional model:** a recent explainable brain GNN | IEEE/Amrita | Get |
+| B4 | Cui et al., Interpretable graph neural networks for connectome-based brain disorder analysis (IBGNN). *MICCAI*, LNCS, pp. 375ff, 2022. doi:10.1007/978-3-031-16452-1_36 | 114 | Related work: interpretable brain GNN | Author copy | Optional |
+| B10 | Yu et al., Long-range brain graph transformer (ALTER). *NeurIPS*, pp. 24472ff, 2024. doi:10.52202/079017-0771 | 20 | Related work; alternative to ContrastPool | Proc. | Optional |
+| B6 | Zheng et al., BPI-GNN: interpretable brain network-based psychiatric diagnosis and subtyping. *NeuroImage* 293, 2024 | – | Related work (prototype explanations) | OA | Optional |
+| B7 | Wei et al., A brain graph foundation model (BrainGFM). *ICLR*, 2026 | – | One sentence on the newest direction | Proc. | Optional |
+| H1 | Lee et al., Graph neural network-based modeling of functional brain connectivity in autism spectrum disorder using the ABIDE-I and II datasets. *Psychiatry Research: Neuroimaging*, 2026 | – | Realistic ABIDE accuracy range (GCN/GAT/SAGPool, about 61% balanced accuracy) | Check | Get |
 
-## G. Datasets, atlases and tools (must cite if used)
+## S. Shortcuts and site effects
 
-| # | Paper | Venue | Why you must cite it | Access |
+| # | Reference | Cites | Use in the paper | Access | Status |
+|---|---|---|---|---|---|
+| A4 | Geirhos et al., Shortcut learning in deep neural networks. *Nature Machine Intelligence* 2:665ff, 2020. doi:10.1038/s42256-020-00257-z | 2227 | Defines shortcut learning | Author copy | Get |
+| A9 | Zech et al., Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs. *PLOS Medicine* 15:e1002683, 2018. doi:10.1371/journal.pmed.1002683 | 1702 | **Hospital as a shortcut** in medical imaging | OA | Get |
+| A5 | DeGrave, Janizek & Lee, AI for radiographic COVID-19 detection selects shortcuts over signal. *Nature Machine Intelligence* 3:610ff, 2021. doi:10.1038/s42256-021-00338-7 | 631 | Shortcut found only through explanations | Author copy | Get |
+| A10 | Brown et al., Detecting shortcut learning for fair medical AI using shortcut testing. *Nature Communications* 14:4314, 2023. doi:10.1038/s41467-023-39902-7 | 107 | Varying the shortcut strength to test reliance, like our 50–90% drift experiment | OA | Get |
+| A7 | Abraham et al., Deriving reproducible biomarkers from multi-site resting-state data: an autism-based example. *NeuroImage* 147:736ff, 2017. doi:10.1016/j.neuroimage.2016.10.045 | 701 | ABIDE site effects; leave-site-out testing | Author copy | Get |
+| F10 | Wachinger et al., Detect and correct bias in multi-site neuroimaging datasets. *Medical Image Analysis* 67:101879, 2021. doi:10.1016/j.media.2020.101879 | 115 | Site bias in multi-site neuroimaging; harmonisation as a fix | Author copy | Get |
+| F11 | Dinsdale, Jenkinson & Namburete, Deep learning-based unlearning of dataset bias for MRI harmonisation and confound removal. *NeuroImage* 228:117689, 2021. doi:10.1016/j.neuroimage.2020.117689 | 178 | Adversarial scanner unlearning; named as future comparison | OA | Get |
+
+## F. Harmonisation (ComBat and its pitfalls)
+
+| # | Reference | Cites | Use in the paper | Access | Status |
+|---|---|---|---|---|---|
+| F1 | Johnson, Li & Rabinovic, Adjusting batch effects in microarray expression data using empirical Bayes methods (ComBat). *Biostatistics* 8:118ff, 2007. doi:10.1093/biostatistics/kxj037 | 8663 | **ComBat** (standard EB version used) | Check | Get |
+| F2 | Fortin et al., Harmonization of multi-site diffusion tensor imaging data. *NeuroImage* 161:149ff, 2017. doi:10.1016/j.neuroimage.2017.08.047 | 1261 | ComBat in neuroimaging | Author copy (PMC) | Get |
+| F3 | Yu et al., Statistical harmonization corrects site effects in functional connectivity measurements from multi-site fMRI data. *Human Brain Mapping* 39:4213ff, 2018. doi:10.1002/hbm.24241 | 458 | **ComBat on functional connectivity** (our setting) | Author copy (PMC) | Partial |
+| F9 | Nygaard, Rødland & Hovig, Methods that remove batch effects while retaining group differences may lead to exaggerated confidence in downstream analyses. *Biostatistics* 17:29ff, 2016. doi:10.1093/biostatistics/kxv027 | 379 | **Explains our label-protected ComBat result** (inflated group differences) | OA | Get |
+| F4 | Chen et al., Mitigating site effects in covariance for machine learning in neuroimaging data (CovBat). *Human Brain Mapping* 43, 2022 | – | Alternative harmonisation (limitations) | OA | Optional |
+| F8 | Xin et al., ComBat-Predict enhances generalizability of neuroimaging models to new sites. *Human Brain Mapping* 47, 2026 | – | ComBat for unseen sites | OA | Optional |
+| H11 | Zhang, Tuzhilina & Park, Sparse covariate-driven factorization of brain connectivity with application to site effect correction (SLACC). *Biostatistics* 27, 2026 | – | Localised site effects in ABIDE connectivity; supports our localised decoy | Check | Optional |
+
+## W. SiteSwap's neighbours: augmentation against spurious features
+
+| # | Reference | Cites | Use in the paper | Access | Status |
+|---|---|---|---|---|---|
+| E5 | Kaushik, Hovy & Lipton, Learning the difference that makes a difference with counterfactually-augmented data. *ICLR*, 2020 | 253 | Counterfactual augmentation: change the spurious part, keep the label | Proc. | Get |
+| E6 | Gao, Sagawa, Koh, Hashimoto & Liang, Out-of-domain robustness via targeted augmentations. *ICML*, PMLR 202, 2023 | – | **Closest general method:** randomise domain-dependent features, keep the label. SiteSwap is this idea with ComBat's site model | Proc. | Get |
+| E7 | Ilse, Tomczak & Forré, Selecting data augmentation for simulating interventions. *ICML*, PMLR 139, 2021 | 35 | Augmentation as an intervention on the spurious variable (theory) | Proc. | Get |
+| E4 | Liu et al., Rationalizing graph neural networks with data augmentation (RGDA). *ACM TKDD* 18(4), 2024. doi:10.1145/3638781 | 15 | Closest graph method: swaps environment subgraphs | Check | Have |
+| E2 | Sui et al., Causal attention for interpretable and generalizable graph classification (CAL). *KDD*, pp. 1696ff, 2022. doi:10.1145/3534678.3539366 | 195 | Shortcut-feature mixing on graphs | Author copy | Optional |
+| E1 | Wu et al., Discovering invariant rationales for graph neural networks (DIR). *ICLR*, 2022 | – | Invariant rationales; related | Proc. | Optional |
+
+## R. Site-robust and interpretable brain GNNs (related work)
+
+| # | Reference | Use in the paper | Access | Status |
 |---|---|---|---|---|
-| G1 | Di Martino et al., The autism brain imaging data exchange (ABIDE I) | Molecular Psychiatry 19, 2014 | Required by ABIDE's terms | Author copy (PMC) |
-| G2 | Craddock et al., The Neuro Bureau Preprocessing Initiative: open sharing of preprocessed neuroimaging data and derivatives | Frontiers in Neuroinformatics, 2013 (conference abstract) | Required for ABIDE Preprocessed (PCP) | OA |
-| G3 | ADHD-200 Consortium, The ADHD-200 Consortium: a model to advance the translational potential of neuroimaging | Frontiers in Systems Neuroscience 6, 2012 | Replication dataset | OA |
-| G4 | Bellec et al., The Neuro Bureau ADHD-200 Preprocessed repository | NeuroImage 144, 2017 | Preprocessed ADHD-200 | OA |
-| G5 | Tzourio-Mazoyer et al., Automated anatomical labeling of activations in SPM (AAL atlas) | NeuroImage 15, 2002 | Main atlas | Check (cite without full read) |
-| G6 | Craddock et al., A whole brain fMRI atlas generated via spatially constrained spectral clustering (CC200) | Human Brain Mapping 33, 2012 | Sensitivity atlas | Author copy (PMC) |
-| G7 | Yeo et al., The organization of the human cerebral cortex estimated by intrinsic functional connectivity (Yeo-7) | Journal of Neurophysiology 106, 2011 | Network prior in SiteSwap | OA (free at journal) |
-| G8 | Fey & Lenssen, Fast graph representation learning with PyTorch Geometric | ICLR Workshop 2019 | Software; workshop paper, standard to cite | Free |
-| G9 | Abraham et al., Machine learning for neuroimaging with scikit-learn (nilearn) | Frontiers in Neuroinformatics 8, 2014 | Software for data loading and connectivity | OA |
+| C3 | Xu et al., BrainOOD: out-of-distribution generalizable brain network analysis. *ICLR*, 2025 | **Our leave-site-out folds come from it**; related site-shift method | Proc. | Have |
+| C1 | Zheng et al., BrainIB: interpretable brain network-based psychiatric diagnosis with graph information bottleneck. *IEEE TNNLS* 36(7), 2025 | Base paper of the dissertation; information-bottleneck explanations | IEEE/Amrita | Have |
+| C4 | Qiu et al., MetaExplainer: domain generalization of functional connectome analyses from the perspective of explainability. *Medical Image Analysis* 105, 2025 | Explanations under site shift | Check | Optional |
+| C5 | Qiu et al., Towards GNNs with domain-generalizable explainability for fMRI-based brain disorder diagnosis (XG-GNN). *MICCAI*, LNCS, pp. 454–464, 2024 | Earlier version of C4 | Check | Optional |
+| C6 | Yu, Liu & Ji, Causal invariance-aware augmentation for brain graph contrastive learning (CIA-GCL). *ICML*, PMLR 267, 2025 | Site-invariant brain subgraph | Proc. | Optional |
+| H6 | Zhao et al., A unified graph domain adaptation framework for cross-site brain network analysis. *IEEE TMI*, 2026 | Adversarial cross-site alignment | IEEE/Amrita | Optional |
+| H2 | Hu et al., BrainIB++. *Biomedical Signal Processing and Control*, 2026 | Newest information-bottleneck brain GNN | Check | Optional |
+| H3, H5, H7–H10 | Zheng (PLOS Digit Health), Xia (MedIA), Ji (TBME), Ji (ISBI), Lan (ISBI), He DPGR-Net (Neural Networks), all 2026 | One sentence of related work at most | – | Optional |
+| H4 | Wang et al., JNEL-GCN for ADHD. *IEEE TMI*, 2026 | Reports 97% accuracy with literature-checked biomarkers; cite neutrally as an example of why ground-truth checks are needed | IEEE/Amrita | Optional |
 
-Captum (explainer library) exists only on arXiv: cite it as software (GitHub URL and version), not as a paper.
+## G. Data, atlas, software and reporting (must cite)
 
-## H. 2026 papers (peer-reviewed, found 28 Oct 2026)
+| # | Reference | Cites | Why | Access |
+|---|---|---|---|---|
+| G1 | Di Martino et al., The autism brain imaging data exchange: towards a large-scale evaluation of the intrinsic brain architecture in autism. *Molecular Psychiatry* 19:659ff, 2014. doi:10.1038/mp.2013.78 | 2780 | Required by ABIDE's terms | Author copy (PMC) |
+| G2 | Craddock et al., The Neuro Bureau Preprocessing Initiative: open sharing of preprocessed neuroimaging data and derivatives. *Frontiers in Neuroinformatics*, 2013 (conference abstract) | – | Required for ABIDE Preprocessed (PCP) | OA |
+| G5 | Tzourio-Mazoyer et al., Automated anatomical labeling of activations in SPM using a macroscopic anatomical parcellation of the MNI MRI single-subject brain. *NeuroImage* 15:273ff, 2002. doi:10.1006/nimg.2001.0978 | 16319 | AAL atlas | Check |
+| G11 | Craddock, James, Holtzheimer, Hu & Mayberg, A whole brain fMRI atlas generated via spatially constrained spectral clustering. *Human Brain Mapping* 33:1914ff, 2012. doi:10.1002/hbm.21333 | – | **Used:** CC200 atlas (second-atlas replication) | Paywalled | Get |
+| G9 | Abraham et al., Machine learning for neuroimaging with scikit-learn (nilearn). *Frontiers in Neuroinformatics* 8, 2014 | – | Data download and connectivity | OA |
+| G10 | Paszke et al., PyTorch: an imperative style, high-performance deep learning library. *NeurIPS*, 2019 | – | Software | Proc. |
+| A6 | Rosenblatt et al., Data leakage inflates prediction performance in connectome-based machine learning models. *Nature Communications* 15:1829, 2024. doi:10.1038/s41467-024-46150-w | 236 | Supports our leakage-free protocol (ComBat fitted on training data only) | OA |
+| H13 | Kurashkin et al., Evaluation rigor from GNNs to graph foundation models: a systematic review and four-axis reporting standard. *Machine Learning and Knowledge Extraction*, 2026 | – | Reporting checklist (seeds, significance tests, simple baselines, leakage); say we follow it | OA |
 
-Searched with Consensus (2026 only, preprints excluded) and web search. None plants known effects into real connectomes to test explanations, so the novelty still holds.
+If the new models use PyTorch Geometric, also cite Fey & Lenssen, ICLR Workshop 2019 (G8).
 
-| # | Paper | Venue | Use in your paper | Access | Code | Priority |
-|---|---|---|---|---|---|---|
-| H1 | Lee et al., GNN-based modeling of functional brain connectivity in ASD using ABIDE-I and II | Psychiatry Research: Neuroimaging, 2026 | **Benchmark reference:** GCN/GAT/SAGPool on 2,013 ABIDE subjects, CC200 atlas, ComBat; about 61% balanced accuracy over 100 × 10-fold CV. Sets a realistic accuracy range; uses permutation importance for explanations | Check | Check | **High** |
-| H2 | Hu et al., BrainIB++: GNNs and information bottleneck for functional brain biomarkers in schizophrenia | Biomedical Signal Processing and Control, 2026 | Newest information-bottleneck brain GNN; possible extra baseline; biomarkers judged by match to clinical findings | Check | Yes (github.com/TianzhengHU/BrainIB_coding) | **High** |
-| H3 | Zheng et al., Functional connectivity-based classification and subtyping of major depression: an ensemble GNN approach | PLOS Digital Health, 2026 | Compares against BrainIB and CI-GNN under leave-one-site-out; uses ComBat | OA | Check | Medium |
-| H4 | Wang et al., ADHD classification with GCN via joint feature learning among nodes and edges (JNEL-GCN) | IEEE TMI, 2026 | Reports 97% accuracy on ADHD-200 and ABIDE-I, with biomarkers validated against the literature. Example of why ground-truth checks are needed; cite neutrally | IEEE (Amrita) | Check | Medium |
-| H5 | Xia et al., Meta-analysis prompt guided multi-task graph transformer for cognitive deficits and psychiatric disorders | Medical Image Analysis, 2026 | Newest interpretable brain graph transformer; biomarkers judged by match to findings | Check | Check | Low |
-| H6 | Zhao et al., A unified graph domain adaptation framework for cross-site brain network analysis | IEEE TMI, 2026 | Cross-site GNN with adversarial site alignment (related to SiteSwap's site head) | IEEE (Amrita) | Check | Medium |
-| H7 | Ji et al., Prototypical representation learning for multi-site domain generalization in schizophrenia diagnosis | IEEE TBME, 2026 | Site-invariant brain-network learning (HSIC); related | IEEE (Amrita) | Check | Low |
-| H8 | Ji et al., LBFC-MDG: learnable brain functional connectivity with multi-site domain generalization | ISBI 2026 | Meta-learning across sites on a GCN; related | IEEE (Amrita) | Check | Low |
-| H9 | Lan et al., TopProNet: brain disease diagnosis via topological features and class prototypes | ISBI 2026 | Robustness to site shift; related | IEEE (Amrita) | Check | Low |
-| H10 | He et al., DPGR-Net: disentangled population-guided GNN for MDD identification | Neural Networks, 2026 | Separates site from disease; reports 92.4% on REST-meta-MDD | Check | Check | Low |
-| H11 | Zhang, Tuzhilina & Park, Sparse covariate-driven factorization of brain connectivity with application to site effect correction (SLACC) | Biostatistics 27, 2026 | Models localised site effects on ABIDE connectivity; alternative to ComBat for the site generator | Check (may be OA) | Check | **High** |
-| H12 | Fang et al., Out-of-distribution-resistant evaluations for explanations of GNNs (OAR/OAR+) | IEEE TPAMI, 2026 | Explanation-evaluation metric; possible extra metric in the benchmark | IEEE (Amrita) | Check | **High** |
-| H13 | Kurashkin et al., Evaluation rigor from GNNs to graph foundation models: a systematic review and four-axis reporting standard | Machine Learning and Knowledge Extraction, 2026 | Reporting checklist (seeds, significance tests, tuned trivial baselines, leakage). Follow it and say so | OA | n/a | **High** |
-| H14 | Jeon, Systematic validation of GNN explanations against adverse outcome pathway reactive centers | Journal of Cheminformatics, 2026 | **Method to borrow:** a shuffled-label retraining control showed most explanation-to-ground-truth agreement came from explainer biases. Add this control to your benchmark | OA | Check | **High** |
+## Preprints (awareness only; recheck for a published version before submission)
 
-Removed from earlier lists: C7 (DPGR-Net) and C8 (Zhao TMI) are now H10 and H6.
-
-## Excluded: preprints (awareness only; recheck for a published version before submission)
-
-| Paper | Why it matters | Status as of 28 Oct 2026 |
+| Paper | Why it matters | Status (1 Nov 2026) |
 |---|---|---|
-| EGS (Zhang, Betala & Agarwal, arXiv 2602.07708) | Closest conceptual neighbour | arXiv only |
+| CFBrainAug (arXiv 2610.32184): modularity-induced counterfactual brain-network augmentation for interpretable autism diagnosis | Closest brain-network augmentation work (for interpretability, not scanner effects). **Cite as a preprint** in related work, because a reviewer will know it | arXiv only |
+| CORE, "When brain networks travel: learning beyond site" (arXiv 2605.06050) | Site deconfounding for brain networks | arXiv only |
+| EGS (Zhang, Betala & Agarwal, arXiv 2602.07708) | Scores explainers by retraining gains | arXiv only |
 | XIGL (Younesian et al., arXiv 2608.14121) | Decoy training with human feedback | arXiv only |
-| CORE (Wang et al., arXiv 2605.06050) | Site deconfounding for brain networks | arXiv only |
-| Artemis (Dai et al., arXiv 2606.18287) | Causal confounder removal | arXiv only |
-| Patel et al., GNN connectome harmonisation (arXiv 2507.13992) | Site translation with GNNs | arXiv only |
-| BAGEL (Rathee et al., arXiv 2206.13983) | Explainer benchmark | One repository lists ECML PKDD; not confirmed, so treated as preprint |
-| BrainNNExplainer (Cui et al., arXiv 2107.05097) | Shared explanation mask | Workshop / arXiv only; cite IBGNN (B4) instead |
-| Captum (Kokhlikyan et al., arXiv 2009.07896) | Explainer library | Cite as software |
+| Artemis (arXiv 2606.18287), Patel et al. (arXiv 2507.13992), BAGEL (arXiv 2206.13983), BrainNNExplainer (arXiv 2107.05097) | Related; cite IBGNN (B4) instead of BrainNNExplainer | arXiv only |
 
-## Reading order (about 25 items to get)
+## No longer used (kept for the record)
 
-1. **Baselines with code** (decide what runs): B1, B3, B4, C4, C6, E2. Check each GitHub repo runs on AAL/CC200 inputs.
-2. **Generator and planting recipe:** F3 Methods, F4, F2.
-3. **Explainers and evaluation:** D1–D7.
-4. **Motivation:** A3–A7.
-5. **Datasets and tools:** G1–G9 (read the data sections only).
+D2 PGExplainer and D4 GSAT (no learned edge masks in the final method), E3 CAL+ (journal version of E2), F7 Wang 2023 harmonisation review, G3–G4 ADHD-200 (no replication dataset), G6 CC200 and G7 Yeo-7 (AAL only; SiteSwap uses no network prior), Captum (our explainers are our own code).
+
+## Reading order for the paper
+
+Read in this order. Tier 1 is what the paper cannot be written without; for Tier 3, abstract and the relevant section are enough.
+
+**Tier 1: core (about 15 papers; read fully)**
+
+| Order | Paper | Why first | Paper section |
+|---|---|---|---|
+| 1 | A1 Chan 2025 | The gap: brain-GNN explanations are judged only against the literature | Introduction |
+| 2 | C2 CI-GNN (the quote) | Authors admit there is no ground truth for real brain data | Introduction |
+| 3 | F5 Beer 2020 | The planting template we follow | Methods: planting |
+| 4 | D11 Adebayo 2022 | Closest experiment: planted spurious signals vs explanations | Related work, Discussion |
+| 5 | D12 Zhou 2022 | Planting known features into real data to score attributions | Related work |
+| 6 | D5 GraphXAI 2023 | Closest graph benchmark (synthetic only) | Related work |
+| 7 | D9 Simonyan 2014, D3 IG 2017, D1 GNNExplainer 2019 | The three explainers we use | Methods: explainers |
+| 8 | D7 Faber 2021 | The main objection to ground-truth evaluation; answer it | Discussion |
+| 9 | B2 BrainGB 2023 | How our GCN is built; the standard brain-GNN pipeline | Methods: models |
+| 10 | B1 BrainGNN 2021 | Next model to implement | Methods: models |
+| 11 | B8 BrainNetCNN 2017 | Model to implement | Methods: models |
+| 12 | B3 BNT 2022 | Model to implement | Methods: models |
+| 13 | F1 Johnson 2007 + F3 Yu 2018 | ComBat, and ComBat on connectivity | Methods: ComBat, SiteSwap |
+| 14 | F9 Nygaard 2016 | Why label-protected ComBat inflates results | Results, Discussion |
+| 15 | E6 Gao 2023 | Closest general method to SiteSwap; state the difference | Related work: SiteSwap |
+
+**Tier 2: support (read the key sections)**
+
+A4 Geirhos 2020, A9 Zech 2018, A10 Brown 2023 (shortcuts) · A7 Abraham 2017, C3 BrainOOD (ABIDE sites, our folds) · E5 Kaushik 2020, E7 Ilse 2021, E4 RGDA 2024 (augmentation) · F11 Dinsdale 2021, F10 Wachinger 2021 (scanner effects) · D10 Adebayo 2018, D13 CLEVR-XAI, D8 Yuan survey (explanation evaluation) · A2 Han 2026, H1 Lee 2026 (realistic ABIDE accuracy; simple models) · B5 ContrastPool (if added) · CFBrainAug preprint.
+
+**Tier 3: cite only (abstract enough)**
+
+B9 Kipf 2017, G1, G2, G5, G9, G10, A6 Rosenblatt 2024, H13 Kurashkin 2026, F2 Fortin 2017, F6 Reynolds 2023, B4 IBGNN, B10 ALTER, C1 BrainIB, C4–C6, H2–H12, E1, E2, D6.

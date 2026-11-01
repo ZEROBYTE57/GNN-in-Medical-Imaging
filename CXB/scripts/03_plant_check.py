@@ -1,7 +1,7 @@
 """Sanity check of region-level time-series planting on real ABIDE data.
 
 For each atlas, region count and level, a few fake splits are built and reported:
-  - recovery ceiling: AUPRC of ranking edges by a plain two-sample |t| on the fake labels,
+  - t-test reference (called "ceiling" in early notes): AUPRC of ranking edges by a plain two-sample |t| on the fake labels,
     inside edges = positives, untouched edges = negatives, diluted edges ignored
     ("don't care"); also with diluted edges counted as negatives. No model is trained:
     if a simple test cannot find the planted edges at a level, no explainer should;
@@ -73,7 +73,7 @@ def main():
                             "inside_shift": float(np.mean(shift)), "incident_shift": float(np.mean(dil)),
                             "share_fully_orthogonal": float(np.mean(orth)), "n_pool": p.meta["n_pool"]}
                 r = out[key]
-                print(f"m={m:2d} ({r['inside_edges']:3d} edges) {level:4s} | ceiling AUPRC {r['auprc_dontcare']:.3f} "
+                print(f"m={m:2d} ({r['inside_edges']:3d} edges) {level:4s} | t-test ref AUPRC {r['auprc_dontcare']:.3f} "
                       f"(min {r['auprc_dontcare_min']:.3f}; incident as negatives {r['auprc_incident_negative']:.3f}) | "
                       f"shift {r['inside_shift']:+.3f} (target {r['target_shift']:.3f}), dilution {r['incident_shift']:+.3f} | "
                       f"invalid {100 * r['invalid_share']:.1f}% | orthogonal {100 * r['share_fully_orthogonal']:.0f}% | "

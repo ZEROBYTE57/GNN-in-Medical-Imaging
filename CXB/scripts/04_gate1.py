@@ -7,9 +7,10 @@ site with saliency and Integrated Gradients.
 
 Scores (inside edges = positives, untouched = negatives, incident = don't care):
   - group AUPRC: attributions averaged over the test subjects, then scored (primary;
-    comparable to the recovery ceiling);
+    comparable to the t-test reference);
   - subject AUPRC: scored per test subject, then averaged (stricter);
-  - ceiling: |t| between the fake groups of the training subjects (what the model
+  - t-test reference (column "ceiling_auprc"; not an upper bound): |t| between the fake
+    groups of the training subjects (what the model
     learns from); a plain statistical test, no model.
 Pass rule (docs/decisions.md): best model + explainer reaches mean group AUPRC >= 0.5.
 
@@ -96,7 +97,7 @@ def main():
                 r = rows[-2:]
                 print(f"  split {split} fold {fold} {BRAINOOD_FOLDS[fold][0]:8s} n={len(te):2d} {name}: "
                       f"acc {acc:.2f} auc {auc:.2f} ep {best_epoch:3d} | group AUPRC saliency "
-                      f"{r[0]['group_auprc']:.2f} ig {r[1]['group_auprc']:.2f} | ceiling {ceiling:.2f}", flush=True)
+                      f"{r[0]['group_auprc']:.2f} ig {r[1]['group_auprc']:.2f} | t-test ref {ceiling:.2f}", flush=True)
 
     df = pd.DataFrame(rows)
     tag = f"{args.level}_m{args.m}_seed{args.seed}"

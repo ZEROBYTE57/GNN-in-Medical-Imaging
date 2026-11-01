@@ -46,6 +46,15 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 - **Graph:** nodes joined by edges. Here, **node = brain region** and **edge = connection**; an edge's strength is the correlation.
 - **GNN (graph neural network):** a neural network that works on graphs by passing information along edges. Examples: **GCN**, **GIN**.
 - **MLP:** a plain neural network that ignores the graph and just reads the matrix values. It's the key "is the graph even needed?" comparison.
+- **GCN layer (Kipf & Welling 2017):** each region updates itself by averaging its neighbours' features, weighted by connection strength. Our GCN has two such layers.
+- **Readout:** the step that turns all region outputs into one prediction per brain. Ours joins them in a fixed order (as in BrainGB), so the model knows which region is which.
+- **BrainGB (IEEE TMI 2023):** a benchmark that standardised how brain GNNs are built; our GCN follows it.
+- **BrainNetCNN (NeuroImage 2017):** a connectome model that slides cross-shaped filters over the connectivity matrix (edge-to-edge, edge-to-node, node-to-graph). The classic brain-network deep model.
+- **BrainGNN (Medical Image Analysis 2021):** a brain GNN whose layers have region-specific weights and that keeps only the most useful regions (pooling). The kept-region scores are its built-in explanation.
+- **Transformer / attention:** a model in which every region looks at every other region and learns how much to attend to each. **Brain Network Transformer (BNT, NeurIPS 2022)** applies this to connectivity; its attention weights can be read as an explanation.
+- **ContrastPool (IEEE TMI 2024):** a recent explainable brain GNN that pools regions using differences between patient and control groups.
+- **Built-in vs post-hoc explanation:** built-in = the model produces it while predicting (BrainGNN scores, BNT attention); post-hoc = computed afterwards by an explainer (saliency, IG). CXB can score both against the planted answer.
+- **Reimplementation:** writing a published model ourselves from its paper, with the same layers and settings. The paper then says "our reimplementation of X" and lists any differences.
 - **Label:** the answer the model must predict (here, autism = 1, control = 0).
 - **Control:** a healthy participant, not someone "about to get the disease". Patients are people with the diagnosis.
 - **Epoch:** one pass of training through all the training data.
@@ -70,7 +79,7 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 - **Shortcut:** when a model predicts from site differences (or another unrelated cue) instead of the disease. The model can look accurate while being right for the wrong reasons.
 - **ComBat / harmonisation:** a statistical method that estimates and removes site effects. We use it to *add* them instead, fitted on training folds only.
 - **Site decoy:** a fake site effect we plant on purpose, to test whether explanations point at it.
-- **SiteSwap (our method):** trains the model so its explanation stays the same when a scan's site is swapped (via ComBat). An explanation that changes with the site is site-driven.
+- **SiteSwap (our method):** adds a copy of each training scan moved to another site (via ComBat), with the same label, so the site stops being a useful clue. Only the training data gets extra copies; the test data is not changed. (An early version also penalised explanations that changed with the site; it is now only an ablation.)
 
 ## Planted ground truth (the benchmark, CXB)
 
@@ -100,13 +109,16 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
   - **GNNExplainer** and **PGExplainer:** learn a mask over edges.
 - **Explanation mask:** a score per edge saying how important it is.
 - **AUPRC (area under the precision-recall curve):** how well the explainer's ranking of edges puts the true (planted) edges on top. 1 is perfect; chance is the share of true edges, 0.003 to 0.03 here.
-- **Recovery ceiling:** the AUPRC a plain statistical test gets (|t| per edge, no model). If even this fails, no explainer can succeed. Ours:
+- **t-test reference (formerly "recovery ceiling"):** the AUPRC a plain statistical test gets (|t| per edge between the fake groups, training subjects only, no model). If even this fails, explainers are unlikely to succeed. It is *not* an upper bound: a trained model scored on more subjects can beat it slightly (saliency 0.80–0.81 vs 0.78 at x2).
   - × 0.5: 0.03–0.08
   - × 1: 0.17–0.28
   - × 2: 0.80–0.83
   - × 4: about 1.0
 - **Scanner share:** the share of an explanation's most important connections (top 45) that lie in the fake scanner regions. 0 means the explanation ignores the scanner; 0.45 means almost half of it points at the scanner.
 - **Eta squared (η²):** the share of a connection's variation explained by which hospital a scan came from. We use it to find where real scanners leave the biggest fingerprints (median 0.08, decoy regions 0.14).
+- **GNNExplainer-style input mask:** our version of GNNExplainer. It learns a soft mask over the connectivity matrix that keeps the model's prediction while using as few connections as possible.
+- **Site alignment (Spearman):** on real labels, how closely the explanation's ranking of connections follows the ranking by hospital effect (eta squared). Near 0 means the explanation doesn't follow the hospital.
+- **Label probe:** a small logistic regression that tries to predict the label from a chosen set of connections. If it succeeds where it shouldn't, label information has leaked into those connections.
 - **Fidelity:** does removing the edges an explainer marks as important actually change the prediction?
 - **Stability:** does the explanation stay similar across seeds and small changes to the data?
 - **Shuffled-label control:** train on randomly shuffled labels. A trustworthy explainer should then find nothing.
@@ -119,7 +131,10 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
   - Its mask is sampled with **Gumbel-softmax**, a trick for picking edges at random but in a way that can still be trained.
 - **Weight change:** how much a network's parameters moved during training. A part whose weights never move has learned nothing. We use this as a check that an explanation module is really trained.
 - **Reimplementation:** we write our own BrainIB from the paper's description, because their code has no licence.
-- **CI-GNN, BrainOOD, BrainGNN:** other brain-GNN baselines, still to be added.
+- **CI-GNN, BrainOOD:** other brain GNNs, cited as related work. BrainOOD's leave-site-out folds are used.
+- **Published models (1 Nov 2026):** BrainGNN, BrainNetCNN and Brain Network Transformer, reimplemented from their papers. Only BrainNetCNN passes the sanity test; the other two do not learn from about 250 training subjects.
+- **Holm correction:** a way to adjust p-values when several tests are run together, so that one lucky result does not count as a finding. We use it for the main comparisons.
+- **Scanner map (audit):** the connections that differ most between scanners in the training data. It stands in for the known decoy connections, so the scanner share of an explanation can be checked on real data without ground truth.
 
 ## Project process
 
@@ -132,5 +147,9 @@ Grouped by topic. Numbers are from our own runs (Oct 2026).
 - **Oracle / upper bound:** a version of a method given perfect information that's unavailable in practice (here, the true scanner-B copy of each brain). It shows the best the method could ever do.
 - **Ablation:** removing or changing one part of a method to see what that part contributes (here, SiteSwap with and without the explanation penalty).
 - **Leakage:** label information reaching the model by an unintended route, making results look better or explanations point the wrong way.
+- **Drift curve:** the same experiment repeated as the shortcut grows stronger (50% to 90%), showing when explanations start to move to the scanner.
+- **Covariate inflation:** when batch correction protects a variable such as the diagnosis, it can make the groups look more different than they are. It's a known pitfall of ComBat with unbalanced sites.
+- **Empirical Bayes (in ComBat):** standard ComBat does not trust each site's estimated shift on its own; it pulls every connection's estimate towards the average over all connections of that site. This makes the correction steadier with small sites. Our first ComBat left it out and turned out to be a much weaker baseline.
+- **Early stopping / chosen epoch:** we keep the model from the epoch with the lowest validation loss. If that comes too early, the model is kept before it has learned anything.
 - **Fallback:** a pre-agreed backup topic, such as an explanation trust score or atlas sensitivity.
 - **Sensitivity analysis:** repeating the main result with a different choice (here, CC200 instead of AAL) to check the result doesn't depend on that choice.

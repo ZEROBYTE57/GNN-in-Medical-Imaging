@@ -157,9 +157,10 @@ def region_scores(d):
     return a.sum(1) / (a.shape[0] - 1)
 
 
-def select_regions(d, m):
-    """The m regions with the largest mean |d|, strongest first."""
-    return np.argsort(-region_scores(d), kind="stable")[:m]
+def select_regions(d, m, skip=0):
+    """The m regions with the largest mean |d|, strongest first, after skipping the top `skip`
+    (skip=m gives a second, non-overlapping region set)."""
+    return np.argsort(-region_scores(d), kind="stable")[skip:skip + m]
 
 
 def region_masks(n_rois, regions):
@@ -227,19 +228,22 @@ class PlantedRegions:
 
 
 def build_regions(fc, dx, site, n_dead_rois, load_ts, m, level, split_seed,
-                  rank_seed=0, asd_label=1, control_label=2, pipeline_kwargs=None, keep_ts=False):
+                  rank_seed=0, asd_label=1, control_label=2, pipeline_kwargs=None, keep_ts=False, skip=0, target=None):
     """One region-level planted dataset.
 
     load_ts(i) must return the (timepoints, regions) ROI time series of dataset subject i,
     from which fc[i] was computed. Controls keep their original matrices; fake patients get
     connectivity recomputed from planted time series with the same pipeline.
-    keep_ts=True stores the patients' planted time series (needed to add a scanner decoy)."""
+    keep_ts=True stores the patients' planted time series (needed to add a scanner decoy).
+    skip=m plants in the next m regions instead (second region set, robustness check);
+    target overrides the planted shift (to give a second region set the same strength)."""
     dx, site = np.asarray(dx), np.asarray(site)
     rank, pool = ranking_split(dx, site, n_dead_rois, control_label, seed=rank_seed)
     d, sd = edge_effect_sizes(fc, np.where(dx == asd_label)[0], rank)
-    regions = select_regions(d, m)
+    regions = select_regions(d, m, skip)
     inside, incident = region_masks(fc.shape[1], regions)
-    target = LEVELS[level] * float(np.median(np.abs(d[inside]) * sd[inside]))
+    if target is None:
+        target = LEVELS[level] * float(np.median(np.abs(d[inside]) * sd[inside]))
     y = fake_labels(site[pool], seed=split_seed)
     patients = pool[y == 1]
     r0 = float(np.tanh(fc[patients][:, inside].mean()))
@@ -257,7 +261,8 @@ def build_regions(fc, dx, site, n_dead_rois, load_ts, m, level, split_seed,
                 kept[row] = Z
     meta = {"m": m, "n_inside_edges": int(inside.sum() // 2), "level": level,
             "multiplier": LEVELS[level], "target_shift": target, "amplitude": amplitude,
-            "split_seed": split_seed, "rank_seed": rank_seed, "n_rank": len(rank),
+            "split_seed": split_seed, "rank_seed": rank_seed, "skip": skip,
+            "first_regions": select_regions(d, skip).tolist(), "n_rank": len(rank),
             "n_pool": len(pool), "n_patients": int(y.sum()),
             "share_fully_orthogonal": n_full / max(int(y.sum()), 1)}
     return PlantedRegions(out, y, site[pool], pool, regions, inside, incident, meta, kept)

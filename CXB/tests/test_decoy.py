@@ -48,3 +48,26 @@ def test_top_share():
     iu = np.triu_indices(5, 1)
     scores = inside[iu].astype(float)
     assert top_share(scores, inside, 1) == 1.0
+
+
+def test_edge_decoy_is_a_fixed_shift_on_decoy_edges_only():
+    ts, fc, dx, site, dead = _toy_ts()
+    p = build_regions(fc, dx, site, dead, lambda i: ts[i], m=3, level="x2", split_seed=0, keep_ts=True)
+    dec = build_decoy(p, lambda i: ts[i], fc, dx, site, m=3, min_site_n=10, mode="edge")
+    delta = dec.fc_b - p.fc
+    assert np.allclose(delta[:, dec.inside], dec.meta["target_shift"])
+    assert np.abs(delta[:, ~dec.inside]).max() == 0
+
+
+def test_second_region_set_does_not_overlap_the_first():
+    from cxb.decoy import select_decoy_regions
+    from cxb.planting import select_regions
+    rng = np.random.default_rng(0)
+    R = 40
+    d = rng.standard_normal((R, R)); d = (d + d.T) / 2
+    eta = rng.random((R, R)); eta = (eta + eta.T) / 2
+    dis_a, dis_b = select_regions(d, 5), select_regions(d, 5, skip=5)
+    dec_a = select_decoy_regions(eta, dis_a, 5)
+    dec_b = select_decoy_regions(eta, np.concatenate([dis_b, dis_a]), 5, skip=5)
+    assert not set(dis_a) & set(dis_b)
+    assert not set(dec_b) & (set(dis_a) | set(dis_b) | set(dec_a))   # skip removes the first decoy set

@@ -35,7 +35,35 @@ def integrated_gradients(model, fc, steps=32, baseline=None):
     return ((x - b) * total / steps).abs()
 
 
+def mask_explainer(model, fc, steps=150, lr=0.05, size_coef=0.005, ent_coef=0.1, seed=0):
+    """GNNExplainer-style soft mask on the connectivity entries (Ying et al., 2019),
+    model-agnostic so it works for the MLP and the GCN alike.
+
+    Per subject, a symmetric mask m in (0, 1) is learned so that the masked input
+    fc * m keeps the model's predicted class, while a size penalty keeps the mask small
+    and an entropy penalty pushes it towards 0/1. Returns the mask (batch, R, R)."""
+    x = fc.detach()
+    with torch.no_grad():
+        target = model(x).argmax(1)
+    gen = torch.Generator(device="cpu").manual_seed(seed)
+    logits = (0.1 * torch.randn(x.shape, generator=gen)).to(x.device).requires_grad_(True)
+    opt = torch.optim.Adam([logits], lr=lr)
+    off = 1 - torch.eye(x.shape[-1], device=x.device)
+    for _ in range(steps):
+        m = torch.sigmoid((logits + logits.transpose(-1, -2)) / 2) * off
+        out = model(x * m)
+        ent = -(m * torch.log(m + 1e-8) + (1 - m) * torch.log(1 - m + 1e-8))
+        loss = torch.nn.functional.cross_entropy(out, target) + size_coef * m.sum((1, 2)).mean() / x.shape[-1] \
+            + ent_coef * ent.mean()
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+    with torch.no_grad():
+        return torch.sigmoid((logits + logits.transpose(-1, -2)) / 2) * off
+
+
 EXPLAINERS = {"saliency": saliency, "ig": integrated_gradients}
+ALL_EXPLAINERS = {**EXPLAINERS, "gnnexplainer": mask_explainer}
 
 
 def edge_scores(attr):
@@ -55,7 +83,8 @@ def auprc(scores, inside, incident):
 
 
 def t_scores(fc, y):
-    """|Welch t| per upper-triangle edge between label groups (the recovery ceiling)."""
+    """|Welch t| per upper-triangle edge between label groups: a univariate reference for
+    recovery (not an upper bound: it uses training subjects only, so a model can exceed it)."""
     fc = np.asarray(fc, dtype=np.float64)
     a, b = fc[y == 1], fc[y == 0]
     se = np.sqrt(a.var(0, ddof=1) / len(a) + b.var(0, ddof=1) / len(b))
