@@ -52,12 +52,12 @@ Access: **OA** = free at the publisher · **Proc.** = free conference proceeding
 | # | Reference | Cites | Role in the paper | Access | Status |
 |---|---|---|---|---|---|
 | B9 | Kipf & Welling, Semi-supervised classification with graph convolutional networks. *ICLR*, 2017 | 23978 | **Used:** our GCN's layer | Proc. | Get |
-| B11 | Veličković, Cucurull, Casanova, Romero, Liò & Bengio, Graph attention networks. *ICLR*, 2018 | – | **Used:** our GAT layer (second GNN, BrainGB set-up) | Proc. | Get |
+| B11 | Veličković, Cucurull, Casanova, Romero, Liò & Bengio, Graph attention networks. *ICLR*, 2018 | – | GAT code is ready but **not in the paper** (held in reserve in case a reviewer asks for a second GNN) | Proc. | Optional |
 | B2 | Cui et al., BrainGB: a benchmark for brain network analysis with graph neural networks. *IEEE TMI* 42:493ff, 2023. doi:10.1109/tmi.2022.3218745 | 218 | **Used:** our GCN follows its design (node features = connectivity rows, concatenation readout) | IEEE/Amrita | Get |
 | B1 | Li et al., BrainGNN: interpretable brain graph neural network for fMRI analysis. *Medical Image Analysis* 74:102233, 2021. doi:10.1016/j.media.2021.102233 | 831 | **Reimplemented** from the paper; fails our sanity test at about 250 training subjects (reported). Its own region scores are a built-in explanation to score | Author copy (bioRxiv) | Get |
 | B8 | Kawahara et al., BrainNetCNN: convolutional neural networks for brain networks; towards predicting neurodevelopment. *NeuroImage* 146:1038ff, 2017. doi:10.1016/j.neuroimage.2016.09.046 | 813 | **Used** (reimplemented from the paper); the classic connectome-specific model | Author copy | Get |
 | B3 | Kan, Dai, Cui, Zhang, Guo & Yang, Brain Network Transformer. *NeurIPS*, pp. 25586ff, 2022. doi:10.52202/068431-1855 | 160 | **Reimplemented;** fails our sanity test (reported). The standard transformer baseline; attention as a built-in explanation | Proc. | Get |
-| B5 | Xu et al., Contrastive graph pooling for explainable classification of brain networks (ContrastPool). *IEEE TMI* 43:3292ff, 2024. doi:10.1109/tmi.2024.3392988 | 55 | **Optional model:** a recent explainable brain GNN | IEEE/Amrita | Get |
+| B5 | Xu et al., Contrastive graph pooling for explainable classification of brain networks (ContrastPool). *IEEE TMI* 43:3292ff, 2024. doi:10.1109/tmi.2024.3392988 | 55 | Related work: a recent explainable brain GNN (not used) | IEEE/Amrita | Optional |
 | B4 | Cui et al., Interpretable graph neural networks for connectome-based brain disorder analysis (IBGNN). *MICCAI*, LNCS, pp. 375ff, 2022. doi:10.1007/978-3-031-16452-1_36 | 114 | Related work: interpretable brain GNN | Author copy | Optional |
 | B10 | Yu et al., Long-range brain graph transformer (ALTER). *NeurIPS*, pp. 24472ff, 2024. doi:10.52202/079017-0771 | 20 | Related work; alternative to ContrastPool | Proc. | Optional |
 | B6 | Zheng et al., BPI-GNN: interpretable brain network-based psychiatric diagnosis and subtyping. *NeuroImage* 293, 2024 | – | Related work (prototype explanations) | OA | Optional |
@@ -131,7 +131,7 @@ Access: **OA** = free at the publisher · **Proc.** = free conference proceeding
 | A6 | Rosenblatt et al., Data leakage inflates prediction performance in connectome-based machine learning models. *Nature Communications* 15:1829, 2024. doi:10.1038/s41467-024-46150-w | 236 | Supports our leakage-free protocol (ComBat fitted on training data only) | OA |
 | H13 | Kurashkin et al., Evaluation rigor from GNNs to graph foundation models: a systematic review and four-axis reporting standard. *Machine Learning and Knowledge Extraction*, 2026 | – | Reporting checklist (seeds, significance tests, simple baselines, leakage); say we follow it | OA |
 
-If the new models use PyTorch Geometric, also cite Fey & Lenssen, ICLR Workshop 2019 (G8).
+All models are plain PyTorch code of our own, so PyTorch Geometric (G8) is not cited.
 
 ## Preprints (awareness only; recheck for a published version before submission)
 
@@ -145,7 +145,7 @@ If the new models use PyTorch Geometric, also cite Fey & Lenssen, ICLR Workshop 
 
 ## No longer used (kept for the record)
 
-D2 PGExplainer and D4 GSAT (no learned edge masks in the final method), E3 CAL+ (journal version of E2), F7 Wang 2023 harmonisation review, G3–G4 ADHD-200 (no replication dataset), G6 CC200 and G7 Yeo-7 (AAL only; CF-Site uses no network prior), Captum (our explainers are our own code).
+D2 PGExplainer and D4 GSAT (no learned edge masks in the final method), E3 CAL+ (journal version of E2), F7 Wang 2023 harmonisation review, G3–G4 ADHD-200 (no replication dataset), G6 (replaced by G11: CC200 is used only for the hospital-signal replication) and G7 Yeo-7 (CF-Site uses no network prior), Captum (our explainers are our own code).
 
 ## Reading order for the paper
 
@@ -174,8 +174,8 @@ Read in this order. Tier 1 is what the paper cannot be written without; for Tier
 
 **Tier 2: support (read the key sections)**
 
-A4 Geirhos 2020, A9 Zech 2018, A10 Brown 2023 (shortcuts) · A7 Abraham 2017, C3 BrainOOD (ABIDE sites, our folds) · E5 Kaushik 2020, E7 Ilse 2021, E4 RGDA 2024 (augmentation) · F11 Dinsdale 2021, F10 Wachinger 2021 (scanner effects) · D10 Adebayo 2018, D13 CLEVR-XAI, D8 Yuan survey (explanation evaluation) · A2 Han 2026, H1 Lee 2026 (realistic ABIDE accuracy; simple models) · B5 ContrastPool (if added) · CFBrainAug preprint.
+A4 Geirhos 2020, A9 Zech 2018, A10 Brown 2023 (shortcuts) · A7 Abraham 2017, C3 BrainOOD (ABIDE sites, our folds) · E5 Kaushik 2020, E7 Ilse 2021, E4 RGDA 2024 (augmentation) · F11 Dinsdale 2021, F10 Wachinger 2021 (scanner effects) · D10 Adebayo 2018, D13 CLEVR-XAI, D8 Yuan survey (explanation evaluation) · A2 Han 2026, H1 Lee 2026 (realistic ABIDE accuracy; simple models) · CFBrainAug preprint.
 
 **Tier 3: cite only (abstract enough)**
 
-B9 Kipf 2017, B11 Veličković 2018, G11 Craddock 2012, E10 Pawlowski 2020, F12 Tian 2022, F13 Hu 2024, G1, G2, G5, G9, G10, A6 Rosenblatt 2024, H13 Kurashkin 2026, F2 Fortin 2017, F6 Reynolds 2023, B4 IBGNN, B10 ALTER, C1 BrainIB, C4–C6, H2–H12, E1, E2, D6.
+B9 Kipf 2017, G11 Craddock 2012, E10 Pawlowski 2020, F12 Tian 2022, F13 Hu 2024, G1, G2, G5, G9, G10, A6 Rosenblatt 2024, H13 Kurashkin 2026, F2 Fortin 2017, F6 Reynolds 2023, B4 IBGNN, B10 ALTER, C1 BrainIB, C4–C6, H2–H12, E1, E2, D6.
