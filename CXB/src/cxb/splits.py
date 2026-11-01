@@ -1,7 +1,7 @@
 """Evaluation splits.
 
 BrainOOD (Xu et al., ICLR 2025) leave-one-site-out protocol for ABIDE, recovered from its
-released meta.json by matching subjects on age, sex and site (see docs/decisions.md). Each
+released meta.json by matching subjects on age, sex and site (see the decision log). Each
 fold holds out one site for testing and another for validation (model selection); all
 other sites are used for training.
 """
@@ -21,7 +21,7 @@ BRAINOOD_FOLDS = [  # (test site, validation site)
 ]
 
 
-DROPPED_SITES = ("CMU",)  # not in BrainOOD's protocol (docs/decisions.md, 29 Oct 2026)
+DROPPED_SITES = ("CMU",)  # not in BrainOOD's protocol (the decision log, 29 Oct 2026)
 
 
 def site_fold(site, fold, dropped=DROPPED_SITES):

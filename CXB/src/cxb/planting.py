@@ -1,6 +1,6 @@
 """Planted ground truth: add known connectivity effects to real control connectomes.
 
-Shared design (docs/decisions.md, 29 Oct 2026):
+Shared design (the decision log, 29 Oct 2026):
 - A fixed, site-stratified 20% of controls is set aside only to rank edges and regions;
   it never enters the planting pool, so no subject is used twice.
 - Effects are ranked by |Cohen's d| between all autism subjects and the ranking controls.
@@ -21,7 +21,7 @@ Main design: region-level planting in the time series (build_regions)
 
 Control design: exact edge-level planting (build): top-k edges shifted by level x d x SD
 in Fisher-z units; exact ground truth but the matrices are no longer valid correlation
-matrices (measured: 100% of planted subjects; docs/decisions.md).
+matrices (measured: 100% of planted subjects; the decision log).
 
 All functions are NumPy so they can be tested on synthetic data.
 """

@@ -1,7 +1,7 @@
 # ABIDE data summary (week 1)
 
 Built 28 Oct 2026 by `scripts/01_download_abide.py` and `scripts/02_build_connectomes.py`.
-Settings: `configs/data.yaml`; reasons: `decisions.md`.
+Settings: `configs/data.yaml`; reasons for each choice are kept in the decision log.
 
 ## Counts
 
@@ -11,7 +11,7 @@ Settings: `configs/data.yaml`; reasons: `decisions.md`.
 | With preprocessed files and no QC fail | 873 (nilearn reports 871; small difference in the QC rule, to check) |
 | After dropping scans under 100 timepoints | **848** (393 ASD, 455 controls, 19 sites) |
 
-All 25 dropped subjects are the whole **OHSU** site (78 timepoints each). Decided 29 Oct 2026: OHSU stays dropped (see decisions.md).
+All 25 dropped subjects are the whole **OHSU** site (78 timepoints each). Decided 29 Oct 2026: OHSU stays dropped (see the decision log).
 
 ## Per site (AAL; CC200 identical)
 

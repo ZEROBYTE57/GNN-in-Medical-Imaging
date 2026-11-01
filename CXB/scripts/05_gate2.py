@@ -12,7 +12,7 @@ Scores per fold, on the test site (group attributions):
   - scanner share: share of the top-k explanation edges inside the decoy (k = number of
     disease edges); disease share likewise;
   - test accuracy.
-Pass rule (docs/decisions.md, fixed before running): at 90% train-only, for at least one
+Pass rule (the decision log, fixed before running): at 90% train-only, for at least one
 model with saliency, scanner share rises by >= 0.2 over 50%, or disease AUPRC falls by >= 0.2.
 
     .venv\\Scripts\\python.exe scripts\\05_gate2.py [--splits 3] [--level x2]

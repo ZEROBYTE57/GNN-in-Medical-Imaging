@@ -1,4 +1,4 @@
-"""Two controls asked for by the 1 Nov review (rules in docs/decisions.md, fixed before running).
+"""Two controls asked for by the 1 Nov review (rules in the decision log, fixed before running).
 
 1. Shuffled-label control: the x2 benchmark setting, but the fake labels of the training
    and validation subjects are permuted, so there is no learnable effect. Disease AUPRC

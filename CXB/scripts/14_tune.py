@@ -1,4 +1,4 @@
-"""Fixed tuning budget for models that fail the gate-1 sanity test (rule in docs/decisions.md,
+"""Fixed tuning budget for models that fail the gate-1 sanity test (rule in the decision log,
 1 Nov 2026): learning rate {1e-3, 3e-4} x width {default, half}, chosen by mean validation
 loss only (x4 planted effect, no shortcut, split 0, seed 0, BrainOOD's 10 site folds).
 Test data is not looked at. Writes results/final/models/tune_<model>.json with the choice.

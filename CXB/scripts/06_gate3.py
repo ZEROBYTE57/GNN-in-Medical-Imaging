@@ -11,7 +11,7 @@ train-only and the train-and-test designs. Methods (scanner A/B known for every 
   siteswap_oracle siteswap_aug with the true other-scanner version of each brain (upper
                  bound: what CF-Site achieves with a perfect swap; not usable in practice)
 Scores as in gate 2 (test site, group attributions): disease AUPRC, scanner share, accuracy.
-Pass rule: docs/decisions.md (fixed before running).
+Pass rule: the decision log (fixed before running).
 
     .venv\\Scripts\\python.exe -u scripts\\06_gate3.py [--splits 3]
 """

@@ -1,6 +1,6 @@
 """Scanner decoy: a fake, label-linked scanner effect at a known place (gate 2).
 
-Design (docs/decisions.md, 30 Oct 2026):
+Design (the decision log, 30 Oct 2026):
 - Place: the m regions outside the planted disease set where real ABIDE sites differ most
   (between-site share of variance, eta squared, among healthy controls; no labels used).
 - Size: the typical real difference between two hospitals on those connections (median

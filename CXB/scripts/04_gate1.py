@@ -12,7 +12,7 @@ Scores (inside edges = positives, untouched = negatives, incident = don't care):
   - t-test reference (column "ceiling_auprc"; not an upper bound): |t| between the fake
     groups of the training subjects (what the model
     learns from); a plain statistical test, no model.
-Pass rule (docs/decisions.md): best model + explainer reaches mean group AUPRC >= 0.5.
+Pass rule (the decision log): best model + explainer reaches mean group AUPRC >= 0.5.
 
     .venv\\Scripts\\python.exe scripts\\04_gate1.py [--splits 3] [--level x4] [--m 10]
 """

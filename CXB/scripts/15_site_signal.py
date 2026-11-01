@@ -1,4 +1,4 @@
-"""How strong is the real hospital signal in ABIDE connectomes? (CPU only; decisions.md, 1 Nov)
+"""How strong is the real hospital signal in ABIDE connectomes? (CPU only; the decision log, 1 Nov)
 
 A shortcut is a risk when it is easier to learn than the disease. This check measures both
 on the real data with the same simple model: L2 logistic regression (C = 0.1) on the

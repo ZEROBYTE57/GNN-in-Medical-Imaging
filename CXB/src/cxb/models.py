@@ -101,7 +101,7 @@ def train_model(model, fc_tr, y_tr, fc_va, y_va, epochs=150, lr=1e-3, weight_dec
                 batch_size=32, seed=0, min_epochs=30):
     """Train with Adam; keep the epoch with the lowest validation loss (never test data),
     looking only from epoch `min_epochs` on (warm-up: the loss minimum often falls in the
-    first few epochs, before the model has learned anything; see docs/decisions.md).
+    first few epochs, before the model has learned anything; see the decision log).
 
     Returns (model with best weights, best epoch, list of validation losses)."""
     g = torch.Generator().manual_seed(seed)
@@ -329,7 +329,7 @@ class GAT(nn.Module):
 
 MODELS.update({"brainnetcnn": BrainNetCNN, "braingnn": BrainGNN, "bnt": BNT, "gat": GAT})
 
-# Tuning variants (decisions.md, 1 Nov): "name-half" halves the width, "name-lr0.0003" sets the
+# Tuning variants (the decision log, 1 Nov): "name-half" halves the width, "name-lr0.0003" sets the
 # learning rate (decimal), e.g. "bnt-half-lr0.0003". The rate is read by the training loops.
 _HALF = {"braingnn": {"hidden": 16}, "bnt": {"ff": 256, "hidden": 128},
          "brainnetcnn": {"e2e": 16, "e2n": 32, "n2g": 128}, "gcn": {"hidden": 8}, "gat": {"hidden": 8}, "mlp": {"hidden": 32}}

@@ -1,4 +1,4 @@
-"""Can the scanner-effect map be estimated from training data alone? (CPU only; decisions.md, 1 Nov)
+"""Can the scanner-effect map be estimated from training data alone? (CPU only; the decision log, 1 Nov)
 
 The site audit (a practical version of the scanner share) replaces the known decoy edges
 by the edges where the training data differ most between scanners. This check measures,
