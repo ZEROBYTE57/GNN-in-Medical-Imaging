@@ -12,6 +12,14 @@ CXB (Connectome eXplanation Benchmark) makes the correct answer known:
 2. **Scanner shortcut.** A scanner effect, sized from real differences between ABIDE hospitals, is linked to the label during training only.
 3. **Scoring explanations.** Explanations are scored on whether they point at the planted effect or at the scanner, and fixes are compared: ComBat harmonisation and **counterfactual site training (CF-Site)**, in which each training scan is paired with its counterfactual at another scanner.
 
+Each scan is a brain graph: 116 regions (nodes) and the correlations between their activity (edges).
+
+![One connectome as a matrix and as a brain graph](CXB/docs/figures/fig11_connectome_graph.png)
+
+The benchmark plants a known answer and a known trap into this graph:
+
+![The planted disease connections and the scanner-shortcut connections on the brain](CXB/docs/figures/fig5_brain_benchmark.png)
+
 ## Key findings
 
 **Explainers can find a planted effect.** At twice the typical real autism effect, saliency recovers the planted connections as well as a univariate t-test (AUPRC 0.80–0.81; chance 0.008). With shuffled labels, explainers score at chance, so recovery reflects what the model learned.
@@ -22,13 +30,23 @@ CXB (Connectome eXplanation Benchmark) makes the correct answer known:
 
 ![Scanner share, disease recovery and accuracy as the shortcut strengthens](CXB/docs/figures/fig2_drift.png)
 
+The same drift on the brain: the models' most important connections move from the planted disease connections onto the scanner connections.
+
+![Explanation drift on the brain at a 50% and a 90% shortcut](CXB/docs/figures/fig6_brain_drift.png)
+
 **The ComBat version decides the outcome.** Under the shortcut, GCN disease recovery ranges from 0.02 to 0.63 across four common ComBat versions. CF-Site clearly beats plain training (+0.15 AUPRC) and matches the best ComBat without harmonising new-site data. With the true other-scanner scan (oracle CF-Site), recovery reaches 0.85–0.90: the limit is the scanner model, not the training method.
 
 ![Disease recovery and scanner share for each fix](CXB/docs/figures/fig3_methods.png)
 
+![Where each model's explanation points under each fix](CXB/docs/figures/fig7_brain_fixes.png)
+
 **The risk is real on real data.** From the same connectomes, the hospital is predicted with balanced accuracy 0.70 (chance 0.05), against 0.64 for autism (chance 0.50). The connections a scanner affects can be estimated from training data alone, so the scanner share of an explanation can be checked without ground truth.
 
+![Where real hospitals differ and where autism differs, on the brain](CXB/docs/figures/fig10_real_data_brain.png)
+
 ![Real autism labels: accuracy and alignment of explanations with the hospital effect](CXB/docs/figures/fig4_real.png)
+
+More views: a [circular connectome plot](CXB/docs/figures/fig8_circle.png) of the planted answer, the scanner trap and the drift, and the [connection matrices](CXB/docs/figures/fig9_matrices.png) behind them. The brain figures show one split and seed as an illustration; all numbers above are averages over all runs.
 
 ## Design
 
@@ -51,7 +69,7 @@ Full result tables: [CXB/docs/results.md](CXB/docs/results.md). Cohort and quali
 CXB/
   src/cxb/      planting.py (planted ground truth), decoy.py (scanner shortcut), combat.py (harmonisation),
                 siteswap.py (CF-Site training), models.py, explain.py (explainers and metrics), splits.py
-  scripts/      the experiment pipeline, from data download to figures
+  scripts/      the experiment pipeline, from data download to figures (including the brain-graph figures)
   tests/        unit tests for planting, decoys, ComBat, CF-Site, models and explainers
   configs/      data settings
   docs/         result tables, data summary and figures
