@@ -25,6 +25,8 @@ Literature/
 CXB/docs/decisions.md
 CXB/docs/paper-outline.md
 CXB/docs/stats.md
+presentations/
+paper/
 
 # Data (large or licence-bound): never commit
 CXB/data/raw/
