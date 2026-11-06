@@ -45,3 +45,6 @@ CXB/scripts/baselines/brainib_smoke.py
 CXB/docs/baseline-notes.md
 # Word documents for the guide (name the guide, contain unpublished findings)
 *.docx
+
+# Early exploration notes (saved AI-chat answers); kept locally, not part of the demonstration
+GNN/*.pdf
