@@ -12,6 +12,8 @@ CXB (Connectome eXplanation Benchmark) makes the correct answer known:
 2. **Scanner shortcut.** A scanner effect, sized from real differences between ABIDE hospitals, is linked to the label during training only.
 3. **Scoring explanations.** Explanations are scored on whether they point at the planted effect or at the scanner, and fixes are compared: ComBat harmonisation and **counterfactual site training (CF-Site)**, in which each training scan is paired with its counterfactual at another scanner.
 
+![The CXB pipeline: data, benchmark, training and fixes, explainers, scores](CXB/docs/figures/fig12_flowchart.png)
+
 Each scan is a brain graph: 116 regions (nodes) and the correlations between their activity (edges).
 
 ![One connectome as a matrix and as a brain graph](CXB/docs/figures/fig11_connectome_graph.png)
@@ -26,7 +28,7 @@ The benchmark plants a known answer and a known trap into this graph:
 
 ![Recovery of the planted connections by planted strength](CXB/docs/figures/fig1_recovery.png)
 
-**Accuracy hides the scanner shortcut; the explanation shows it.** As the scanner–label link in training grows from 50% to 90%, up to 46% of the top explanation connections move to the scanner regions, while test accuracy falls by only 0.04–0.06. A logistic regression drifts the same way. BrainNetCNN fails differently: its explanation holds, but its accuracy drops.
+**Accuracy hides the scanner shortcut; the explanation shows it.** As the scanner–label link in training grows from 50% to 90%, the scanner share of the top explanation connections rises by 0.45 (MLP) and 0.22 (GCN), while test accuracy falls by only 0.04–0.05. A logistic regression drifts the same way. BrainNetCNN fails differently: its explanation holds, but its accuracy drops.
 
 ![Scanner share, disease recovery and accuracy as the shortcut strengthens](CXB/docs/figures/fig2_drift.png)
 
@@ -61,7 +63,7 @@ More views: a [circular connectome plot](CXB/docs/figures/fig8_circle.png) of th
 | Metrics | Disease AUPRC on the planted connections, scanner share of the explanation, test accuracy |
 | Evaluation | Leave-site-out folds (BrainOOD protocol); model selection on validation data only; split-level confidence intervals, paired tests and Holm correction; analysis plans fixed before each experiment |
 
-Full result tables: [CXB/docs/results.md](CXB/docs/results.md). Cohort and quality checks: [CXB/docs/data-summary.md](CXB/docs/data-summary.md).
+Every step on one page, including each model's layers: [full method flow](CXB/docs/figures/fig14_method_flow.png). Full result tables: [CXB/docs/results.md](CXB/docs/results.md). Cohort and quality checks: [CXB/docs/data-summary.md](CXB/docs/data-summary.md).
 
 ## Code
 
@@ -69,7 +71,7 @@ Full result tables: [CXB/docs/results.md](CXB/docs/results.md). Cohort and quali
 CXB/
   src/cxb/      planting.py (planted ground truth), decoy.py (scanner shortcut), combat.py (harmonisation),
                 siteswap.py (CF-Site training), models.py, explain.py (explainers and metrics), splits.py
-  scripts/      the experiment pipeline, from data download to figures (including the brain-graph figures)
+  scripts/      the experiment pipeline, from data download to figures (including the brain-graph and method figures)
   tests/        unit tests for planting, decoys, ComBat, CF-Site, models and explainers
   configs/      data settings
   docs/         result tables, data summary and figures
