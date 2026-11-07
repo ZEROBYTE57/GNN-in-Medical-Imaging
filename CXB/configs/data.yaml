@@ -1,5 +1,4 @@
-# Week-1 data settings. Change a value here, not in the scripts.
-# Each choice below is a default pending confirmation (see docs/decisions.md).
+# Data settings used for every result. Change a value here, not in the scripts.
 
 abide:
   # ABIDE I Preprocessed Connectomes Project (PCP), public S3 bucket, no login.
@@ -8,7 +7,7 @@ abide:
   pipeline: cpac            # cpac | ccs | dparsf | niak
   strategy: filt_noglobal   # band-pass filtered, NO global signal regression
   atlases: [rois_aal, rois_cc200]
-  main_atlas: rois_aal      # AAL 116: CI-GNN and BrainIB defaults; CC200 = sensitivity
+  main_atlas: rois_aal      # AAL 116 for all experiments; CC200 is used as a second-atlas check
   quality_checked: true     # drop subjects any PCP rater marked "fail" (as nilearn does)
 
 paths:

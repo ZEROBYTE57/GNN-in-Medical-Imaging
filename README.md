@@ -87,7 +87,6 @@ Data and experiment outputs are not included in the repository.
 | [HNC GNN/](HNC%20GNN/) | Earlier head-and-neck cancer pipeline |
 | [AD-PopGraph/](AD-PopGraph/) | Leakage-free population graph for Alzheimer's disease (ADNI); protocol only |
 | [Retinal-GNN/](Retinal-GNN/) | Robustness benchmark for graph-based retinal vessel segmentation; metrics only |
-| [GNN/](GNN/) | Early topic-search reports |
 
 ## Data acknowledgement
 
