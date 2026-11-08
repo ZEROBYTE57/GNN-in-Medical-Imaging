@@ -9,10 +9,16 @@ Brain-network models are often explained by highlighting the connections that dr
 CXB (Connectome eXplanation Benchmark) makes the correct answer known:
 
 1. **Planted ground truth.** A known connectivity effect is planted into real healthy-control connectomes from ABIDE, so the "disease" connections are known exactly.
-2. **Scanner shortcut.** A scanner effect, sized from real differences between ABIDE hospitals, is linked to the label during training only.
+2. **Scanner shortcut.** On the planted scans, a scanner effect sized from real differences between ABIDE hospitals is added, and it is linked to the label during training only.
 3. **Scoring explanations.** Explanations are scored on whether they point at the planted effect or at the scanner, and fixes are compared: ComBat harmonisation and **counterfactual site training (CF-Site)**, in which each training scan is paired with its counterfactual at another scanner.
 
-![The CXB pipeline: data, benchmark, training and fixes, explainers, scores](CXB/docs/figures/fig12_flowchart.png)
+From one brain scan to one score, with real data:
+
+![From a brain scan to a benchmark score: region signals, connectivity matrix, planted edges, model, and the scored ranking of edges](CXB/docs/figures/fig16_data_flow.png)
+
+The whole pipeline, in the order the code runs it:
+
+![The CXB pipeline: (a) benchmark construction, (b) training, explanation and scoring](CXB/docs/figures/fig15_main_flow.png)
 
 Each scan is a brain graph: 116 regions (nodes) and the correlations between their activity (edges).
 
