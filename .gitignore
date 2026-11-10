@@ -48,3 +48,6 @@ CXB/docs/baseline-notes.md
 
 # Early exploration notes (saved AI-chat answers); kept locally, not part of the demonstration
 GNN/*.pdf
+
+# Archives (e.g. the paper zip made for Overleaf): never committed
+*.zip
