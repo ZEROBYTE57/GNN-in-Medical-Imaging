@@ -34,7 +34,7 @@ The benchmark plants a known answer and a known trap into this graph:
 
 ![Recovery of the planted connections by planted strength](CXB/docs/figures/fig1_recovery.png)
 
-**Accuracy hides the scanner shortcut; the explanation shows it.** As the scanner–label link in training grows from 50% to 90%, the scanner share of the top explanation connections rises by 0.45 (MLP) and 0.22 (GCN), while test accuracy falls by only 0.04–0.05. A logistic regression drifts the same way. BrainNetCNN fails differently: its explanation holds, but its accuracy drops.
+**Accuracy hides the scanner shortcut; the explanation shows it.** As the scanner–label link in training grows from 50% to 90%, the scanner share of the top explanation connections rises by 0.43 (MLP) and 0.22 (GCN), while test accuracy falls by only 0.03 (MLP) and 0.07 (GCN) (10 splits × 3 seeds; paired confidence intervals in [stats.md](CXB/docs/stats.md) §4). A logistic regression drifts the same way. BrainNetCNN fails differently: its explanation holds, but its accuracy drops.
 
 ![Scanner share, disease recovery and accuracy as the shortcut strengthens](CXB/docs/figures/fig2_drift.png)
 
